@@ -3,7 +3,7 @@ const PORT = process.env.PORT || 3002;
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const connectToDB = require('./database');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -24,6 +24,7 @@ router(app);
 
 const start = async () => {
   try {
+    await connectToDB();
     app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
   }
   catch(e) {
