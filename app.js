@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectToDB = require('./database');
+const routes = require('./routes/routes');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -12,15 +13,7 @@ app.use(bodyParser.urlencoded({
 
 app.use(cors());
 
-const router = app => {
-  app.get('/', (request, response) => {
-      response.send({
-          message: 'REST API for Airways'
-      });
-  });
-}
-
-router(app);
+routes(app);
 
 const start = async () => {
   try {
