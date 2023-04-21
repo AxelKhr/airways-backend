@@ -1,0 +1,11 @@
+{
+  "name": "airway-backend",
+  "version": "1.0.0",
+  "description": "backend for airways",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "author": "Yaroslav Nepiuk",
+  "license": "ISC"
+}
