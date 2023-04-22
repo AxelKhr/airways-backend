@@ -1,5 +1,5 @@
 const CountryCode = require('../../models/country_code')
-
+const Airport = require('../../models/airport')
 class ApiController {
 
   async getCountryCodes(req, res) {
@@ -14,10 +14,32 @@ class ApiController {
           };
         });
       }
-      return res.status(200).json({ countryCodes });
+      return res.status(200).json(countryCodes);
     } catch (e) {
       console.log(e);
       res.status(400).json({message: `Get all country codes error`});
+    }
+  };  
+
+  
+  async getAirports(req, res) {
+    try {
+      let airports = [];
+      if (await Airport.count() !== 0) {
+        airports = await Airport.find().lean().select('code name city country');
+        airports = airports.map((data) => {
+          return {
+            "code": data.code,
+            "name": data.name,
+            "city": data.city,
+            "country": data.country,
+          };
+        });
+      }
+      return res.status(200).json(airports);
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({message: `Get all airports error`});
     }
   };  
 
