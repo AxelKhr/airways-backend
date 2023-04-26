@@ -14,6 +14,8 @@ const router = app => {
 
   app.get('/airports', apiController.getAirports);
 
+  app.get('/races', apiController.getRace);
+
   // app.get('/seed-data2', async (req, res) => {
   //     try {
   //         await seedData2();
