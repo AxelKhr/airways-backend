@@ -163,14 +163,23 @@ Generate races.
 * **Query Params**
 
     "departureAirportCode":"string"
+      
      "arrivalAirportCode":"string" 
+       
      "departureDate":"string"
+       
      "returnDate":"string";
-     "roundTrip":"number";
+       
+     "roundTrip":"number"; (0 or 1)
+       
      "countAdult":"number";
+       
      "countChildren":"number";
+       
      "countInfant":"number";
+       
      "amountRace":"number";
+       
 
      example /races?departureAirportCode=WAW&arrivalAirportCode=DUB&departureDate=2023-04-27T00:00:00.000Z&returnDate=2023-04-28T00:00:00.000Z&roundTrip=1&countAdult=2&countChildren=3&countInfant=2&amountRace=1
 
