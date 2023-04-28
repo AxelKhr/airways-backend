@@ -177,12 +177,14 @@ Check Auth user
 
 * **Query Params**
 
-    None
-
-* **Data Params**
-  ```json
+      ```json
       "id":"jsdhfbcseh7yy32dLKJ"
   ```
+
+* **Data Params**
+
+    None
+
 * **Success Response:**
 
   * **Code:** 200 OK <br />
