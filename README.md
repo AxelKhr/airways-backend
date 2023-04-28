@@ -178,8 +178,8 @@ Check Auth user
 * **Query Params**
 
       ```json
-      "id":"jsdhfbcseh7yy32dLKJ"
-  ```
+        "id":"jsdhfbcseh7yy32dLKJ"
+      ```
 
 * **Data Params**
 
