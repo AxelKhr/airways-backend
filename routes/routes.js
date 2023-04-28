@@ -1,5 +1,6 @@
-const apiController = require('../modules/api_controllers/api_controller');
-
+const apiController = require('../modules/api_controller/api_controller');
+const ApiAuthController = require('../modules/api_auth_controller/api_auth_controller');
+const CheckAuth = require('../middlewares/check_auth')
 // const seedData2 = require('../seed2');
 
 
@@ -15,6 +16,12 @@ const router = app => {
   app.get('/airports', apiController.getAirports);
 
   app.get('/races', apiController.getRace);
+
+  app.post('/auth/registration', ApiAuthController.setRegistration);
+
+  app.post('/auth/login', ApiAuthController.login);
+
+  app.get('/auth/check-auth', CheckAuth, ApiAuthController.checkAuth);
 
   // app.get('/seed-data2', async (req, res) => {
   //     try {

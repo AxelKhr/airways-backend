@@ -1,5 +1,9 @@
 const CountryCode = require('../../models/country_code');
 const Airport = require('../../models/airport');
+const ProfileUser = require('../../models/profile_user')
+const bcrypt = require('bcryptjs');
+
+
 const {
   getCoordFunction,
 } = require('../get_coords_function/get_coords_function');
@@ -156,6 +160,7 @@ class ApiController {
       res.status(400).json({ message: `Get races error` });
     }
   }
+
 }
 
 module.exports = new ApiController();
