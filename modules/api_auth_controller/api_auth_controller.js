@@ -112,7 +112,7 @@ class ApiAuthController {
         });
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Get profile error` });
+      res.status(400).json({ message: `Check auth error` });
     }
   }
 }
