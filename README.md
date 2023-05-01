@@ -182,6 +182,7 @@ Check Auth user
 
         "id":"jsdhfbcseh7yy32dLKJ"
 
+        example: ?id=dfsdfsjljflksd345n34jkwjhf
 
 * **Data Params**
 
@@ -949,7 +950,13 @@ Save races.
        {"message": "Data saved successfully."}
     ```
 * **Error Response:**
+  
+    if not verified
+       
+    {message: You are not authorized to perform this operation}
 
+    or 
+  
     {"message": "Saved error"}
   
 * **Notes:**
@@ -987,6 +994,8 @@ Saved races.
 * **Query Params**
 
     id: userID
+
+    example: ?id=dfsdfsjljflksd345n34jkwjhf
 
 * **Data Params**
 
@@ -1285,7 +1294,13 @@ Saved races.
     ]
     ```
 * **Error Response:**
+  
+    if not verified
+       
+    {message: You are not authorized to perform this operation}
 
+    or 
+  
     {"message": "Get races error"}
   
 * **Notes:**
