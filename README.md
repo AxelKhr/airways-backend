@@ -756,9 +756,7 @@ Save races.
             "sex": "male",
             "needAssistance": true ,
             "baggage": "23 kg",
-            "isAdult": true,
-            "isChildren": false,
-            "isInfant": false
+            "type": "Children",
             },
             {
             "firstName": "John",
@@ -767,9 +765,7 @@ Save races.
             "sex": "male",
             "needAssistance": true ,
             "baggage": "23 kg",
-            "isAdult": false,
-            "isChildren": true,
-            "isInfant": false
+            "type": "Children",
             }
         ],
         "contactDetails": {
@@ -917,9 +913,7 @@ Save races.
             "sex": "male",
             "needAssistance": true ,
             "baggage": "23 kg",
-            "isAdult": true,
-            "isChildren": false,
-            "isInfant": false
+            "type": "Children",
             },
             {
             "firstName": "John",
@@ -928,9 +922,7 @@ Save races.
             "sex": "male",
             "needAssistance": true ,
             "baggage": "23 kg",
-            "isAdult": false,
-            "isChildren": true,
-            "isInfant": false
+            "type": "Children",
             }
         ],
         "contactDetails": {
@@ -1151,9 +1143,7 @@ Saved races.
                     "sex": "male",
                     "needAssistance": true,
                     "baggage": "23 kg",
-                    "isAdult": true,
-                    "isChildren": false,
-                    "isInfant": false,
+                    "type": "Children",
                     "_id": "644f8241b0782e408ba68a7d"
                 },
                 {
@@ -1163,9 +1153,7 @@ Saved races.
                     "sex": "male",
                     "needAssistance": true,
                     "baggage": "23 kg",
-                    "isAdult": false,
-                    "isChildren": true,
-                    "isInfant": false,
+                    "type": "Children",
                     "_id": "644f8241b0782e408ba68a7e"
                 }
             ],
@@ -1270,9 +1258,7 @@ Saved races.
                     "sex": "male",
                     "needAssistance": true,
                     "baggage": "23 kg",
-                    "isAdult": true,
-                    "isChildren": false,
-                    "isInfant": false,
+                    "type": "Children",
                     "_id": "644f859e7e94eb411d14b3fb"
                 },
                 {
@@ -1282,9 +1268,7 @@ Saved races.
                     "sex": "male",
                     "needAssistance": true,
                     "baggage": "23 kg",
-                    "isAdult": false,
-                    "isChildren": true,
-                    "isInfant": false,
+                    "type": "Children",
                     "_id": "644f859e7e94eb411d14b3fc"
                 }
             ],
