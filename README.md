@@ -492,7 +492,7 @@ Generate races.
     ```
  
 
-   or
+   for flights the distance of which is more than 3000 kilometers
 
      
      ```json
