@@ -1,7 +1,7 @@
 const CountryCode = require('../../models/country_code');
 const Airport = require('../../models/airport');
-const ProfileUser = require('../../models/profile_user');
-const bcrypt = require('bcryptjs');
+const BookingWithConnecting = require('../../models/booking_with_connecting');
+const BookingWithoutConnecting = require('../../models/booking_without_connecting');
 
 const {
   getCoordFunction,
@@ -19,7 +19,9 @@ const { getCostFunction } = require('../get_cost_function/get_cost_function');
 const {
   getRacesFunction,
 } = require('../get_races_function/get_races_function');
-const { getConnectingAirportFunction } = require('../get_connecting_airport_function/get_connecting_airport_function')
+const {
+  getConnectingAirportFunction,
+} = require('../get_connecting_airport_function/get_connecting_airport_function');
 
 class ApiController {
   async getCountryCodes(req, res) {
@@ -102,25 +104,23 @@ class ApiController {
         departureAirportCity,
         departureAirport.coordinates
       );
-      
+
       const arrivalAirportCoords = await getCoordFunction(
         arrivalAirportCode,
         arrivalAirportCity,
         arrivalAirport.coordinates
       );
-      
 
       const distance = getDistanceFunction(
         departureAirportCoords,
-        arrivalAirportCoords,
+        arrivalAirportCoords
       );
 
       const timeZoneArrivalAirport = await getTimezoneFunction(
-          arrivalAirportCode,
-          arrivalAirportCity,
-          arrivalAirport.timezone
-        );
-      
+        arrivalAirportCode,
+        arrivalAirportCity,
+        arrivalAirport.timezone
+      );
 
       const timeZoneDepartureAirport = await getTimezoneFunction(
         departureAirportCode,
@@ -139,14 +139,11 @@ class ApiController {
           arrivalAirportCoords,
           distance,
         });
-      } 
-
-      if (connectingAirport !== null) {
-        cost = cost + (cost * 0.2);
       }
 
-      const { flightDepartureTime, flightArrivalTime, ...connectingAirportWithoutTime } = connectingAirport;
-      
+      if (connectingAirport !== null) {
+        cost = cost + cost * 0.2;
+      }
 
       const data = {
         departureAirportCode,
@@ -159,13 +156,15 @@ class ApiController {
         arrivalAirportCity,
         arrivalAirportCountry,
         timeZoneArrivalAirport,
-        connectingAirport: connectingAirport ? {
-          code: connectingAirport.code,
-          name: connectingAirport.name,
-          city: connectingAirport.city,
-          country: connectingAirport.country,
-          timezone: connectingAirport.timezone,
-        } : null,
+        connectingAirport: connectingAirport
+          ? {
+              code: connectingAirport.code,
+              name: connectingAirport.name,
+              city: connectingAirport.city,
+              country: connectingAirport.country,
+              timezone: connectingAirport.timezone,
+            }
+          : null,
         races: getRacesFunction(
           {
             departureDate: new Date(departureDate),
@@ -189,7 +188,7 @@ class ApiController {
                     timeZoneDepartureAirport: timeZoneArrivalAirport,
                     timeZoneArrivalAirport: timeZoneDepartureAirport,
                     cost,
-                    connectingAirport
+                    connectingAirport,
                   },
                   amountRace
                 ),
@@ -198,6 +197,47 @@ class ApiController {
         },
       };
       return res.status(200).json(data);
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Get races error` });
+    }
+  }
+
+  async saveRace(req, res) {
+    try {
+      let Booking;
+      if (req.body.connectingAirport === null) {
+        Booking = BookingWithoutConnecting;
+      } else {
+        Booking = BookingWithConnecting;
+      }
+
+      const booking = new Booking(req.body);
+      await booking.save();
+
+      return res.status(200).json({ message: `Data saved successfully` });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Saved error` });
+    }
+  }
+
+  async getSavedRace(req, res) {
+    try {
+      const id = decodeURIComponent(req.query.id);
+      const bookingsWithConnecting = await BookingWithConnecting.find({
+        userId: id,
+      });
+      const bookingsWithoutConnecting = await BookingWithoutConnecting.find({
+        userId: id,
+      });
+
+      const allBookings = [
+        ...bookingsWithConnecting,
+        ...bookingsWithoutConnecting,
+      ];
+
+      return res.status(200).json(allBookings);
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Get races error` });

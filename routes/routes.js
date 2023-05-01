@@ -1,16 +1,14 @@
 const apiController = require('../modules/api_controller/api_controller');
 const ApiAuthController = require('../modules/api_auth_controller/api_auth_controller');
-const CheckAuth = require('../middlewares/check_auth')
-// const seedData2 = require('../seed2');
+const CheckAuth = require('../middlewares/check_auth');
 
-
-const router = app => {
+const router = (app) => {
   app.get('/', (request, response) => {
-      response.send({
-          message: 'REST API for Airways'
-      });
+    response.send({
+      message: 'REST API for Airways',
+    });
   });
-  
+
   app.get('/country-codes', apiController.getCountryCodes);
 
   app.get('/airports', apiController.getAirports);
@@ -23,15 +21,9 @@ const router = app => {
 
   app.get('/auth/check-auth', CheckAuth, ApiAuthController.checkAuth);
 
-  // app.get('/seed-data2', async (_req, res) => {
-  //     try {
-  //         await seedData2();
-  //         res.send('Seed data successfully added to database!');
-  //     } catch (err) {
-  //         console.log(err);
-  //         res.status(500).send('Error adding seed data to database');
-  //     }
-  // });
-}
+  app.post('/save-race', CheckAuth, apiController.saveRace);
+
+  app.get('/get-saved-race', CheckAuth, apiController.getSavedRace);
+};
 
 module.exports = router;
