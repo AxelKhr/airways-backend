@@ -93,9 +93,7 @@ const BookingWithConnecting = new Schema({
       sex: { type: String, enum: ['male', 'female'], required: true },
       needAssistance: { type: Boolean, required: true },
       baggage: { type: String, required: true },
-      isAdult: { type: Boolean, required: true },
-      isChildren: { type: Boolean, required: true },
-      isInfant: { type: Boolean, required: true },
+      type: { type: String, enum: ['Adult', 'Children', 'Infant'], required: true },
     },
   ],
   contactDetails: {
