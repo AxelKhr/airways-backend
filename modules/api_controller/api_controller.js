@@ -1,8 +1,7 @@
 const CountryCode = require('../../models/country_code');
 const Airport = require('../../models/airport');
-const ProfileUser = require('../../models/profile_user')
+const ProfileUser = require('../../models/profile_user');
 const bcrypt = require('bcryptjs');
-
 
 const {
   getCoordFunction,
@@ -20,6 +19,7 @@ const { getCostFunction } = require('../get_cost_function/get_cost_function');
 const {
   getRacesFunction,
 } = require('../get_races_function/get_races_function');
+const { getConnectingAirportFunction } = require('../get_connecting_airport_function/get_connecting_airport_function')
 
 class ApiController {
   async getCountryCodes(req, res) {
@@ -46,6 +46,7 @@ class ApiController {
       let airports = [];
       if ((await Airport.count()) !== 0) {
         airports = await Airport.find().lean().select('code name city country');
+        airports.sort((a, b) => (a.code > b.code ? 1 : -1));
         airports = airports.map((data) => {
           return {
             code: data.code,
@@ -91,48 +92,89 @@ class ApiController {
       const departureAirport = await Airport.findOne({
         code: departureAirportCode,
       });
+
       const departureAirportName = departureAirport.name;
       const departureAirportCity = departureAirport.city;
       const departureAirportCountry = departureAirport.country;
 
       const departureAirportCoords = await getCoordFunction(
-        departureAirportCode
+        departureAirportCode,
+        departureAirportCity,
+        departureAirport.coordinates
       );
-      const arrivalAirportCoords = await getCoordFunction(arrivalAirportCode);
+      
+      const arrivalAirportCoords = await getCoordFunction(
+        arrivalAirportCode,
+        arrivalAirportCity,
+        arrivalAirport.coordinates
+      );
+      
+
       const distance = getDistanceFunction(
         departureAirportCoords,
-        arrivalAirportCoords
+        arrivalAirportCoords,
       );
-      const timeZoneDepartureAirport = await getTimezoneFunction(
-        departureAirportCoords
-      );
-      const timeZoneArrivalAirport = await getTimezoneFunction(
-        arrivalAirportCoords
-      );
-      const flightTime = getFlightTimeFunction(distance);
 
-      const cost = getCostFunction(distance);
+      const timeZoneArrivalAirport = await getTimezoneFunction(
+          arrivalAirportCode,
+          arrivalAirportCity,
+          arrivalAirport.timezone
+        );
+      
+
+      const timeZoneDepartureAirport = await getTimezoneFunction(
+        departureAirportCode,
+        departureAirportCity,
+        departureAirport.timezone
+      );
+
+      let connectingAirport = null;
+      const flightTime = getFlightTimeFunction(distance);
+      let cost = getCostFunction(distance);
+      if (distance > 3000) {
+        connectingAirport = await getConnectingAirportFunction({
+          departureAirportCode,
+          departureAirportCoords,
+          arrivalAirportCode,
+          arrivalAirportCoords,
+          distance,
+        });
+      } 
+
+      if (connectingAirport !== null) {
+        cost = cost + (cost * 0.2);
+      }
+
+      const { flightDepartureTime, flightArrivalTime, ...connectingAirportWithoutTime } = connectingAirport;
+      
 
       const data = {
-        departureAirportCode: departureAirportCode,
-        departureAirportName: departureAirportName,
-        departureAirportCity: departureAirportCity,
-        departureAirportCountry: departureAirportCountry,
-        timeZoneDepartureAirport: timeZoneDepartureAirport,
-        arrivalAirportCode: arrivalAirportCode,
-        arrivalAirportName: arrivalAirportName,
-        arrivalAirportCity: arrivalAirportCity,
-        arrivalAirportCountry: arrivalAirportCountry,
-        timeZoneArrivalAirport: timeZoneArrivalAirport,
-        flightTime: flightTime,
+        departureAirportCode,
+        departureAirportName,
+        departureAirportCity,
+        departureAirportCountry,
+        timeZoneDepartureAirport,
+        arrivalAirportCode,
+        arrivalAirportName,
+        arrivalAirportCity,
+        arrivalAirportCountry,
+        timeZoneArrivalAirport,
+        connectingAirport: connectingAirport ? {
+          code: connectingAirport.code,
+          name: connectingAirport.name,
+          city: connectingAirport.city,
+          country: connectingAirport.country,
+          timezone: connectingAirport.timezone,
+        } : null,
         races: getRacesFunction(
           {
             departureDate: new Date(departureDate),
-            tickets: tickets,
-            flightTime: flightTime,
-            timeZoneDepartureAirport: timeZoneDepartureAirport,
-            timeZoneArrivalAirport: timeZoneArrivalAirport,
-            cost: cost,
+            tickets,
+            flightTime,
+            timeZoneDepartureAirport,
+            timeZoneArrivalAirport,
+            cost,
+            connectingAirport,
           },
           amountRace
         ),
@@ -142,11 +184,12 @@ class ApiController {
                 getRacesFunction(
                   {
                     departureDate: new Date(returnDate),
-                    tickets: tickets,
-                    flightTime: flightTime,
+                    tickets,
+                    flightTime,
                     timeZoneDepartureAirport: timeZoneArrivalAirport,
                     timeZoneArrivalAirport: timeZoneDepartureAirport,
-                    cost: cost,
+                    cost,
+                    connectingAirport
                   },
                   amountRace
                 ),
@@ -160,7 +203,6 @@ class ApiController {
       res.status(400).json({ message: `Get races error` });
     }
   }
-
 }
 
 module.exports = new ApiController();

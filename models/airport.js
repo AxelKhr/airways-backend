@@ -5,6 +5,12 @@ const Airport = new Schema({
   name: {type: String, unique: true},
   city: {type: String, unique: true},
   country: {type: String, unique: false},
+  coordinates: {
+    lat: {type: Number},
+    lng: {type: Number}
+  },
+  timezone: {type: Number, unique: false},
 })
+
 
 module.exports = model('Airport', Airport);

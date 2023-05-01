@@ -23,7 +23,7 @@ const router = app => {
 
   app.get('/auth/check-auth', CheckAuth, ApiAuthController.checkAuth);
 
-  // app.get('/seed-data2', async (req, res) => {
+  // app.get('/seed-data2', async (_req, res) => {
   //     try {
   //         await seedData2();
   //         res.send('Seed data successfully added to database!');

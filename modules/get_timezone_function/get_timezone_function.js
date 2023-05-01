@@ -1,19 +1,35 @@
 const axios = require('axios');
-const moment = require('moment-timezone');
+const Airport = require('../../models/airport');
 
-function getTimezoneOffset(city) {
-  const offsetInMinutes = moment().tz(city).utcOffset();
-  const offsetInHours = (offsetInMinutes / 60);
-  return offsetInHours;
-}
+module.exports.getTimezoneFunction = async function (
+  airport,
+  city,
+  timezoneFromData
+) {
+  let airportTimeZone;
 
-module.exports.getTimezoneFunction = async function (coord) {
-  const geonamesUserName = 'Flash226';
+  if (timezoneFromData && timezoneFromData !== undefined) {
+    airportTimeZone = timezoneFromData;
+  } else {
+    const openCageApiKey = '44ecc1ddb24844ec93ea24e5f9956f01';
+    const airportGeocoderUrl = `https://api.opencagedata.com/geocode/v1/json?q=${airport}+${city}&key=${openCageApiKey}`;
+    const airportGeocoderResponse = await axios.get(airportGeocoderUrl);
+    const airportTimeZoneOffset =
+      airportGeocoderResponse.data.results[0].annotations.timezone
+        .offset_string;
 
-  const timezoneUrl = `http://api.geonames.org/timezoneJSON?formatted=true&lat=${coord.lat}&lng=${coord.lng}&username=${geonamesUserName}`;
-  const timezoneResponse = await axios.get(timezoneUrl);
-  const timezoneId = timezoneResponse.data.timezoneId;
-  const timezone = getTimezoneOffset(timezoneId);
+    const sign = airportTimeZoneOffset.slice(0, 1);
+    const hours = airportTimeZoneOffset.slice(1, 3);
 
-  return timezone;
+    const offset =
+      parseInt(hours) * 60 + parseInt(airportTimeZoneOffset.slice(3));
+    airportTimeZone = parseInt(`${sign}${offset / 60}`);
+
+    const airportChange = await Airport.findOneAndUpdate(
+      { code: airport },
+      { $set: { timezone: airportTimeZone } },
+      { new: true }
+    );
+  }
+  return airportTimeZone;
 }
