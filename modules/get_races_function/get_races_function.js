@@ -47,16 +47,27 @@ module.exports.getRacesFunction = function (data, days) {
         Math.floor(Math.random() * 10) + data.tickets + daysBeforeDeparture * 5;
 
       const flight = {
-        departureDateTime,
-        arrivalDateTime,
-        seatNumbers: getSeatsNumberFunction(data.tickets),
-        freeSeats,
-        flightTime: data.flightTime,
+        departureDate:
+          new Date(departureDateTime).toISOString().slice(0, 10) +
+          'T00:00:00.000Z',
+        departureAirportCode: data.departureAirportCode,
+        arrivalAirportCode: data.arrivalAirportCode,
+        flights: [
+          {
+            departureAirportCode: data.departureAirportCode,
+            departureDateTime,
+            arrivalAirportCode: data.arrivalAirportCode,
+            arrivalDateTime,
+            numberRace: getNumberRaceFunction(),
+            seatNumbers: getSeatsNumberFunction(data.tickets),
+            freeSeats,
+            flightTime: data.flightTime,
+          },
+        ],
         ticketsCost: getTicketCostFunction(
           data.cost,
           getCoefficientFunction(i)
         ),
-        numberRace: getNumberRaceFunction(),
       };
 
       flights.push(flight);
@@ -66,7 +77,9 @@ module.exports.getRacesFunction = function (data, days) {
         Math.round(Math.random() * 5) * 10
       );
 
-      const arrivalConectingAeroportDateTime = new Date(departureDateTime.getTime())
+      const arrivalConectingAeroportDateTime = new Date(
+        departureDateTime.getTime()
+      )
         ? new Date(departureDateTime.getTime())
         : null;
       if (arrivalConectingAeroportDateTime) {
@@ -106,7 +119,9 @@ module.exports.getRacesFunction = function (data, days) {
         arrivalConectingAeroportDateTime.getTime() + 3600000
       );
 
-      const arrivalDateTime = new Date(departureConectingAeroportDateTime.getTime())
+      const arrivalDateTime = new Date(
+        departureConectingAeroportDateTime.getTime()
+      )
         ? new Date(departureConectingAeroportDateTime.getTime())
         : null;
       if (arrivalDateTime) {
@@ -118,43 +133,50 @@ module.exports.getRacesFunction = function (data, days) {
               3600000
         );
       }
-      
 
       const flight = {
+        departureDate:
+          new Date(departureDateTime).toISOString().slice(0, 10) +
+          'T00:00:00.000Z',
+        departureAirportCode: data.departureAirportCode,
+        arrivalAirportCode: data.arrivalAirportCode,
+        flights: [],
         ticketsCost: getTicketCostFunction(
           data.cost,
           getCoefficientFunction(i)
         ),
-        transitRaces: [],
       };
 
       for (let j = 0; j < 2; j++) {
         let transitRace;
         if (j === 0) {
-         transitRace = {
+          transitRace = {
+            departureAirportCode: data.departureAirportCode,
             departureDateTime,
+            arrivalAirportCode: data.connectingAirport.code,
             arrivalDateTime: arrivalConectingAeroportDateTime,
+            numberRace: getNumberRaceFunction(),
             seatNumbers: getSeatsNumberFunction(data.tickets),
             freeSeats: Math.floor(Math.random() * 10) + data.tickets + i * 5,
-            numberRace: getNumberRaceFunction(),
             flightTime: data.connectingAirport.flightDepartureTime,
           };
         } else {
           transitRace = {
+            departureAirportCode: data.connectingAirport.code,
             departureDateTime: departureConectingAeroportDateTime,
+            arrivalAirportCode: data.arrivalAirportCode,
             arrivalDateTime,
+            numberRace: getNumberRaceFunction(),
             seatNumbers: getSeatsNumberFunction(data.tickets),
             freeSeats: Math.floor(Math.random() * 10) + data.tickets + i * 5,
-            numberRace: getNumberRaceFunction(),
             flightTime: data.connectingAirport.flightArrivalTime,
           };
         }
 
-        flight.transitRaces.push(transitRace);
+        flight.flights.push(transitRace);
       }
       flights.push(flight);
     }
-    
   }
 
   return flights;

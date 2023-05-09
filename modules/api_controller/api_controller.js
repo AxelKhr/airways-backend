@@ -28,7 +28,9 @@ class ApiController {
     try {
       let countryCodes = [];
       if ((await CountryCode.count()) !== 0) {
-        countryCodes = await CountryCode.find().lean().select('country code phoneDigits');
+        countryCodes = await CountryCode.find()
+          .lean()
+          .select('country code phoneDigits');
         countryCodes = countryCodes.map((code) => {
           return {
             country: code.country,
@@ -75,14 +77,17 @@ class ApiController {
         req.query.arrivalAirportCode
       );
       const departureDate = decodeURIComponent(req.query.departureDate);
-      const returnDate = decodeURIComponent(req.query.returnDate);
-      const roundTrip = Boolean(
-        Number(decodeURIComponent(req.query.roundTrip))
-      );
+      const returnDate = req.query.returnDate
+        ? decodeURIComponent(req.query.returnDate)
+        : null;
+      const roundTrip = req.query.roundTrip === '1' ? true : false;
+
       const countAdult = Number(decodeURIComponent(req.query.countAdult));
       const countChildren = Number(decodeURIComponent(req.query.countChildren));
       const countInfant = Number(decodeURIComponent(req.query.countInfant));
-      const amountRace = Number(decodeURIComponent(req.query.amountRace));
+      const amountFlights = req.query.amountFlights
+        ? Number(decodeURIComponent(req.query.amountFlights))
+        : 5;
       const tickets = countAdult + countChildren;
 
       const arrivalAirport = await Airport.findOne({
@@ -146,27 +151,67 @@ class ApiController {
         cost = cost + cost * 0.2;
       }
 
+      // const data = {
+      //   departureAirportCode,
+      //   departureAirportName,
+      //   departureAirportCity,
+      //   departureAirportCountry,
+      //   timeZoneDepartureAirport,
+      //   arrivalAirportCode,
+      //   arrivalAirportName,
+      //   arrivalAirportCity,
+      //   arrivalAirportCountry,
+      //   timeZoneArrivalAirport,
+      //   connectingAirport: connectingAirport
+      //     ? {
+      //         code: connectingAirport.code,
+      //         name: connectingAirport.name,
+      //         city: connectingAirport.city,
+      //         country: connectingAirport.country,
+      //         timezone: connectingAirport.timezone,
+      //       }
+      //     : null,
+      //   races: getRacesFunction(
+      //     {
+      //       departureDate: new Date(departureDate),
+      //       tickets,
+      //       flightTime,
+      //       timeZoneDepartureAirport,
+      //       timeZoneArrivalAirport,
+      //       cost,
+      //       connectingAirport,
+      //     },
+      //     amountFlights
+      //   ),
+      //   returnRaces: {
+      //     flights: roundTrip
+      //       ? [
+      //           getRacesFunction(
+      //             {
+      //               departureDate: new Date(returnDate),
+      //               tickets,
+      //               flightTime,
+      //               timeZoneDepartureAirport: timeZoneArrivalAirport,
+      //               timeZoneArrivalAirport: timeZoneDepartureAirport,
+      //               cost,
+      //               connectingAirport,
+      //               departureAirportCode,
+      //               arrivalAirportCode,
+      //             },
+      //             amountFlights
+      //           ),
+      //         ]
+      //       : null,
+      //   },
+      // };
+
       const data = {
         departureAirportCode,
-        departureAirportName,
-        departureAirportCity,
-        departureAirportCountry,
-        timeZoneDepartureAirport,
         arrivalAirportCode,
-        arrivalAirportName,
-        arrivalAirportCity,
-        arrivalAirportCountry,
-        timeZoneArrivalAirport,
-        connectingAirport: connectingAirport
-          ? {
-              code: connectingAirport.code,
-              name: connectingAirport.name,
-              city: connectingAirport.city,
-              country: connectingAirport.country,
-              timezone: connectingAirport.timezone,
-            }
-          : null,
-        races: getRacesFunction(
+        departureDate,
+        returnDate,
+        roundTrip: roundTrip ? 1 : 0,
+        routes: getRacesFunction(
           {
             departureDate: new Date(departureDate),
             tickets,
@@ -175,28 +220,32 @@ class ApiController {
             timeZoneArrivalAirport,
             cost,
             connectingAirport,
+            departureAirportCode,
+            arrivalAirportCode,
           },
-          amountRace
+          amountFlights
         ),
-        returnRaces: {
-          flights: roundTrip
-            ? [
-                getRacesFunction(
-                  {
-                    departureDate: new Date(returnDate),
-                    tickets,
-                    flightTime,
-                    timeZoneDepartureAirport: timeZoneArrivalAirport,
-                    timeZoneArrivalAirport: timeZoneDepartureAirport,
-                    cost,
-                    connectingAirport,
-                  },
-                  amountRace
-                ),
-              ]
-            : null,
-        },
       };
+
+      if (roundTrip) {
+        data.routes = data.routes.concat(
+          getRacesFunction(
+            {
+              departureDate: new Date(returnDate),
+              tickets,
+              flightTime,
+              timeZoneDepartureAirport: timeZoneArrivalAirport,
+              timeZoneArrivalAirport: timeZoneDepartureAirport,
+              cost,
+              connectingAirport,
+              departureAirportCode: arrivalAirportCode,
+              arrivalAirportCode: departureAirportCode,
+            },
+            amountFlights
+          )
+        );
+      }
+
       return res.status(200).json(data);
     } catch (e) {
       console.log(e);
@@ -247,3 +296,31 @@ class ApiController {
 }
 
 module.exports = new ApiController();
+
+// {
+//   departureAirportCode: string,
+//   arrivalAirportCode: string,
+//   departureDate: string,
+//   returnDate: string,
+//   roundTrip: number,
+//   routes: [
+//     {
+//       departureDate: string,
+//       departureAirportCode: string,
+//       arrivalAirportCode: string,
+//       flights: [
+//         {
+//           departureAirportCode: string,
+//           departureDateTime: Date,
+//           arrivalAirportCode: string,
+//           arrivalDateTime: Date,
+//           numberRace: string,
+//           seatNumbers: string[],
+//           freeSeats: number,
+//           flightTime: number,
+//         }
+//       ],
+//       ticketsCost: ITicketCost,
+//     }
+//   ];
+// }

@@ -394,10 +394,10 @@ Generate races.
        
      "countInfant":"number";
        
-     "amountRace":"number";
+     "amountFlights":"number";
        
 
-     example /races?departureAirportCode=WAW&arrivalAirportCode=DUB&departureDate=2023-04-27T00:00:00.000Z&returnDate=2023-04-28T00:00:00.000Z&roundTrip=1&countAdult=2&countChildren=3&countInfant=2&amountRace=1
+     example /races?departureAirportCode=WAW&arrivalAirportCode=DUB&departureDate=2023-04-27T00:00:00.000Z&returnDate=2023-04-28T00:00:00.000Z&roundTrip=1&countAdult=2&countChildren=3&countInfant=2&amountFlights=1
 
 * **Data Params**
 
@@ -409,87 +409,93 @@ Generate races.
     **Content:** 
     ```json
         {
-            "departureAirportCode": "BCN",
-            "departureAirportName": "Barcelona-El Prat Airport",
-            "departureAirportCity": "Barcelona",
-            "departureAirportCountry": "Spain",
-            "timeZoneDepartureAirport": 2,
+            "departureAirportCode": "WAW",
             "arrivalAirportCode": "DUB",
-            "arrivalAirportName": "Dublin Airport",
-            "arrivalAirportCity": "Dublin",
-            "arrivalAirportCountry": "Ireland",
-            "timeZoneArrivalAirport": 1,
-            "connectingAirport": null,
-            "races": [
+            "departureDate": "2023-05-27T00:00:00.000Z",
+            "returnDate": "2023-05-31T00:00:00.000Z",
+            "roundTrip": 1,
+            "routes": [
                 {
-                    "departureDateTime": "2023-05-05T04:10:00.000Z",
-                    "arrivalDateTime": "2023-05-05T05:00:00.000Z",
-                    "seatNumbers": [
-                        "28b",
-                        "29b",
-                        "30b",
-                        "31b",
-                        "32b"
-                    ],
-                    "freeSeats": 14,
-                    "flightTime": 110,
-                    "ticketsCost": {
-                        "adult": {
-                            "totalCost": "131.51",
-                            "fare": "85.48",
-                            "tax": "46.03"
-                        },
-                        "children": {
-                            "totalCost": "102.58",
-                            "fare": "56.42",
-                            "tax": "46.16"
-                        },
-                        "infant": {
-                            "totalCost": "42.08",
-                            "fare": "37.03",
-                            "tax": "5.05"
-                        }
-                    },
-                    "numberRace": "AF1854"
-                }
-            ],
-            "returnRaces": {
-                "flights": [
-                    [
+                    "departureDate": "2023-05-27T00:00:00.000Z",
+                    "departureAirportCode": "WAW",
+                    "arrivalAirportCode": "DUB",
+                    "flights": [
                         {
-                            "departureDateTime": "2023-05-28T16:20:00.000Z",
-                            "arrivalDateTime": "2023-05-28T19:10:00.000Z",
+                            "departureAirportCode": "WAW",
+                            "departureDateTime": "2023-05-27T08:30:00.000Z",
+                            "arrivalAirportCode": "DUB",
+                            "arrivalDateTime": "2023-05-27T09:50:00.000Z",
+                            "numberRace": "NH4847",
                             "seatNumbers": [
-                                "25e",
-                                "26e",
-                                "27e",
-                                "28e",
-                                "29e"
+                                "40f",
+                                "41f",
+                                "42f",
+                                "43f",
+                                "44f"
                             ],
                             "freeSeats": 8,
-                            "flightTime": 110,
-                            "ticketsCost": {
-                                "adult": {
-                                    "totalCost": "124.09",
-                                    "fare": "80.66",
-                                    "tax": "43.43"
-                                },
-                                "children": {
-                                    "totalCost": "96.79",
-                                    "fare": "53.23",
-                                    "tax": "43.56"
-                                },
-                                "infant": {
-                                    "totalCost": "39.71",
-                                    "fare": "34.94",
-                                    "tax": "4.77"
-                                }
-                            },
-                            "numberRace": "SQ8750"
+                            "flightTime": 140
                         }
-                    ]
-                ]
-            }
+                    ],
+                    "ticketsCost": {
+                        "adult": {
+                            "totalCost": "162.15",
+                            "fare": "105.40",
+                            "tax": "56.75"
+                        },
+                        "children": {
+                            "totalCost": "126.48",
+                            "fare": "69.56",
+                            "tax": "56.91"
+                        },
+                        "infant": {
+                            "totalCost": "51.89",
+                            "fare": "45.66",
+                            "tax": "6.23"
+                        }
+                    }
+                },
+                {
+                    "departureDate": "2023-05-31T00:00:00.000Z",
+                    "departureAirportCode": "DUB",
+                    "arrivalAirportCode": "WAW",
+                    "flights": [
+                        {
+                            "departureAirportCode": "DUB",
+                            "departureDateTime": "2023-05-31T05:20:00.000Z",
+                            "arrivalAirportCode": "WAW",
+                            "arrivalDateTime": "2023-05-31T08:40:00.000Z",
+                            "numberRace": "AA8749",
+                            "seatNumbers": [
+                                "34c",
+                                "35c",
+                                "36c",
+                                "37c",
+                                "38c"
+                            ],
+                            "freeSeats": 7,
+                            "flightTime": 140
+                        }
+                    ],
+                    "ticketsCost": {
+                        "adult": {
+                            "totalCost": "153.34",
+                            "fare": "99.67",
+                            "tax": "53.67"
+                        },
+                        "children": {
+                            "totalCost": "119.61",
+                            "fare": "65.78",
+                            "tax": "53.82"
+                        },
+                        "infant": {
+                            "totalCost": "49.07",
+                            "fare": "43.18",
+                            "tax": "5.89"
+                        }
+                    }
+                }
+            ]
         }
     ```
  
@@ -499,129 +505,125 @@ Generate races.
      
      ```json
         {
-            "departureAirportCode": "BCN",
-            "departureAirportName": "Barcelona-El Prat Airport",
-            "departureAirportCity": "Barcelona",
-            "departureAirportCountry": "Spain",
-            "timeZoneDepartureAirport": 2,
-            "arrivalAirportCode": "DEL",
-            "arrivalAirportName": "Indira Gandhi International Airport",
-            "arrivalAirportCity": "Delhi",
-            "arrivalAirportCountry": "India",
-            "timeZoneArrivalAirport": 5,
-            "connectingAirport": {
-                "code": "OSL",
-                "name": "Oslo Airport, Gardermoen",
-                "city": "Oslo",
-                "country": "Norway",
-                "timezone": 2
-            },
-            "races": [
+            "departureAirportCode": "MEX",
+            "arrivalAirportCode": "DUB",
+            "departureDate": "2023-05-27T00:00:00.000Z",
+            "returnDate": "2023-05-31T00:00:00.000Z",
+            "roundTrip": 1,
+            "routes": [
                 {
+                    "departureDate": "2023-05-27T00:00:00.000Z",
+                    "departureAirportCode": "MEX",
+                    "arrivalAirportCode": "DUB",
+                    "flights": [
+                        {
+                            "departureAirportCode": "MEX",
+                            "departureDateTime": "2023-05-27T04:40:00.000Z",
+                            "arrivalAirportCode": "YVR",
+                            "arrivalDateTime": "2023-05-27T08:40:00.000Z",
+                            "numberRace": "UA4446",
+                            "seatNumbers": [
+                                "13e",
+                                "14e",
+                                "15e",
+                                "16e",
+                                "17e"
+                            ],
+                            "freeSeats": 5,
+                            "flightTime": 300
+                        },
+                        {
+                            "departureAirportCode": "YVR",
+                            "departureDateTime": "2023-05-27T10:00:00.000Z",
+                            "arrivalAirportCode": "DUB",
+                            "arrivalDateTime": "2023-05-28T03:00:00.000Z",
+                            "numberRace": "DL4052",
+                            "seatNumbers": [
+                                "19c",
+                                "20c",
+                                "21c",
+                                "22c",
+                                "23c"
+                            ],
+                            "freeSeats": 6,
+                            "flightTime": 540
+                        }
+                    ],
                     "ticketsCost": {
                         "adult": {
-                            "totalCost": "671.74",
-                            "fare": "436.63",
-                            "tax": "235.11"
+                            "totalCost": "836.97",
+                            "fare": "544.03",
+                            "tax": "292.94"
                         },
                         "children": {
-                            "totalCost": "523.96",
-                            "fare": "288.18",
-                            "tax": "235.78"
+                            "totalCost": "652.84",
+                            "fare": "359.06",
+                            "tax": "293.78"
                         },
                         "infant": {
-                            "totalCost": "214.96",
-                            "fare": "189.16",
-                            "tax": "25.79"
+                            "totalCost": "267.83",
+                            "fare": "235.69",
+                            "tax": "32.14"
                         }
-                    },
-                    "transitRaces": [
+                    }
+                },
+                {
+                    "departureDate": "2023-05-31T00:00:00.000Z",
+                    "departureAirportCode": "DUB",
+                    "arrivalAirportCode": "MEX",
+                    "flights": [
                         {
-                            "departureDateTime": "2023-05-05T12:40:00.000Z",
-                            "arrivalDateTime": "2023-05-05T15:20:00.000Z",
+                            "departureAirportCode": "DUB",
+                            "departureDateTime": "2023-05-31T07:40:00.000Z",
+                            "arrivalAirportCode": "YVR",
+                            "arrivalDateTime": "2023-05-31T04:40:00.000Z",
+                            "numberRace": "NH250",
                             "seatNumbers": [
-                                "30d",
-                                "31d",
-                                "32d",
-                                "33d",
-                                "34d"
+                                "11e",
+                                "12e",
+                                "13e",
+                                "14e",
+                                "15e"
                             ],
                             "freeSeats": 13,
-                            "numberRace": "AF6926",
-                            "flightTime": 160
+                            "flightTime": 300
                         },
                         {
-                            "departureDateTime": "2023-05-05T17:50:00.000Z",
-                            "arrivalDateTime": "2023-05-06T04:20:00.000Z",
+                            "departureAirportCode": "YVR",
+                            "departureDateTime": "2023-05-31T07:10:00.000Z",
+                            "arrivalAirportCode": "MEX",
+                            "arrivalDateTime": "2023-05-31T17:10:00.000Z",
+                            "numberRace": "UA2438",
                             "seatNumbers": [
-                                "11b",
-                                "12b",
-                                "13b",
-                                "14b",
-                                "15b"
+                                "23f",
+                                "24f",
+                                "25f",
+                                "26f",
+                                "27f"
                             ],
-                            "freeSeats": 12,
-                            "numberRace": "LH1015",
-                            "flightTime": 450
+                            "freeSeats": 6,
+                            "flightTime": 540
                         }
-                    ]
+                    ],
+                    "ticketsCost": {
+                        "adult": {
+                            "totalCost": "867.18",
+                            "fare": "563.67",
+                            "tax": "303.51"
+                        },
+                        "children": {
+                            "totalCost": "676.40",
+                            "fare": "372.02",
+                            "tax": "304.38"
+                        },
+                        "infant": {
+                            "totalCost": "277.50",
+                            "fare": "244.20",
+                            "tax": "33.30"
+                        }
+                    }
                 }
-            ],
-            "returnRaces": {
-                "flights": [
-                    [
-                        {
-                            "ticketsCost": {
-                                "adult": {
-                                    "totalCost": "673.84",
-                                    "fare": "438.00",
-                                    "tax": "235.84"
-                                },
-                                "children": {
-                                    "totalCost": "525.60",
-                                    "fare": "289.08",
-                                    "tax": "236.52"
-                                },
-                                "infant": {
-                                    "totalCost": "215.63",
-                                    "fare": "189.75",
-                                    "tax": "25.88"
-                                }
-                            },
-                            "transitRaces": [
-                                {
-                                    "departureDateTime": "2023-05-28T17:10:00.000Z",
-                                    "arrivalDateTime": "2023-05-28T16:50:00.000Z",
-                                    "seatNumbers": [
-                                        "27f",
-                                        "28f",
-                                        "29f",
-                                        "30f",
-                                        "31f"
-                                    ],
-                                    "freeSeats": 13,
-                                    "numberRace": "AF1146",
-                                    "flightTime": 160
-                                },
-                                {
-                                    "departureDateTime": "2023-05-28T19:20:00.000Z",
-                                    "arrivalDateTime": "2023-05-29T02:50:00.000Z",
-                                    "seatNumbers": [
-                                        "7e",
-                                        "8e",
-                                        "9e",
-                                        "10e",
-                                        "11e"
-                                    ],
-                                    "freeSeats": 7,
-                                    "numberRace": "NH452",
-                                    "flightTime": 450
-                                }
-                            ]
-                        }
-                    ]
-                ]
-            }
+            ]
         }
     ```
 * **Error Response:**
