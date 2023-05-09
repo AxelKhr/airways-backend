@@ -25,5 +25,4 @@ const router = (app) => {
 
   app.get('/get-saved-race', CheckAuth, apiController.getSavedRace);
 };
-
 module.exports = router;

@@ -28,11 +28,12 @@ class ApiController {
     try {
       let countryCodes = [];
       if ((await CountryCode.count()) !== 0) {
-        countryCodes = await CountryCode.find().lean().select('country code');
+        countryCodes = await CountryCode.find().lean().select('country code phoneDigits');
         countryCodes = countryCodes.map((code) => {
           return {
             country: code.country,
             code: code.code,
+            phoneDigits: code.phoneDigits,
           };
         });
       }

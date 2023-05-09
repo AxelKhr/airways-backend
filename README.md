@@ -264,18 +264,20 @@ Returns all country code.
     ```json
         [   
           {
-          "country": "Australia",
-          "code": "+61"
-          },
-          {
-          "country": "Austria",
-          "code": "+43"
-          },
-          {
-          "country": "Azerbaijan",
-          "code": "+994"
-          },
-                
+            "country": "Australia",
+            "code": "+61",
+            "phoneDigits": 8
+            },
+            {
+            "country": "Austria",
+            "code": "+43",
+            "phoneDigits": 11
+            },
+            {
+            "country": "Azerbaijan",
+            "code": "+994",
+            "phoneDigits": 9
+            },  
         ]
     ```
  
