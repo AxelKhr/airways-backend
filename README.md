@@ -384,9 +384,9 @@ Generate races.
        
      "departureDate":"string"
        
-     "returnDate":"string";
+     "returnDate":"string"; optional
        
-     "roundTrip":"number"; (0 or 1)
+     "roundTrip":"number"; (0 or 1) optional, by default 0
        
      "countAdult":"number";
        
@@ -394,7 +394,7 @@ Generate races.
        
      "countInfant":"number";
        
-     "amountFlights":"number";
+     "amountFlights":"number"; optional, by default 5
        
 
      example /races?departureAirportCode=WAW&arrivalAirportCode=DUB&departureDate=2023-04-27T00:00:00.000Z&returnDate=2023-04-28T00:00:00.000Z&roundTrip=1&countAdult=2&countChildren=3&countInfant=2&amountFlights=1
