@@ -13,15 +13,15 @@ const {
 module.exports.getRacesFunction = function (data, days) {
   const flights = [];
   let currentDate = new Date(data.departureDate);
-  let skipDay = 0;
+
   for (let i = 0; i < days; i++) {
     const departureDateTime = new Date(currentDate.getTime());
-
+    let skipDay = false;
     if (Math.random() <= 0.08) {
-      skipDay += 1;
+      skipDay = true;
     }
 
-    departureDateTime.setDate(currentDate.getDate() + i + skipDay);
+    departureDateTime.setDate(currentDate.getDate() + i);
 
     if (data.connectingAirport === null) {
       departureDateTime.setHours(
@@ -52,18 +52,21 @@ module.exports.getRacesFunction = function (data, days) {
           'T00:00:00.000Z',
         departureAirportCode: data.departureAirportCode,
         arrivalAirportCode: data.arrivalAirportCode,
-        flights: [
-          {
-            departureAirportCode: data.departureAirportCode,
-            departureDateTime,
-            arrivalAirportCode: data.arrivalAirportCode,
-            arrivalDateTime,
-            numberRace: getNumberRaceFunction(),
-            seatNumbers: getSeatsNumberFunction(data.tickets),
-            freeSeats,
-            flightTime: data.flightTime,
-          },
-        ],
+        flights: skipDay
+          ? []
+          : [
+              {
+                departureAirportCode: data.departureAirportCode,
+                departureDateTime,
+                arrivalAirportCode: data.arrivalAirportCode,
+                arrivalDateTime,
+                numberRace: getNumberRaceFunction(),
+                seatNumbers: getSeatsNumberFunction(data.tickets),
+                freeSeats,
+                flightTime: data.flightTime,
+              },
+            ],
+
         ticketsCost: getTicketCostFunction(
           data.cost,
           getCoefficientFunction(i)
@@ -172,8 +175,9 @@ module.exports.getRacesFunction = function (data, days) {
             flightTime: data.connectingAirport.flightArrivalTime,
           };
         }
-
-        flight.flights.push(transitRace);
+        if (!skipDay) {
+          flight.flights.push(transitRace);
+        }
       }
       flights.push(flight);
     }
