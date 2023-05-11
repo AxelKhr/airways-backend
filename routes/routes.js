@@ -23,8 +23,10 @@ const router = (app) => {
 
   app.post('/save-race', CheckAuth, apiController.saveRace);
 
-  app.get('/get-saved-race', CheckAuth, apiController.getSavedRace);
+  app.get('/get-orders', CheckAuth, apiController.getSavedRace);
 
-  app.put('/edit-race', CheckAuth, apiController.editRace);
+  app.put('/edit-order', CheckAuth, apiController.editRace);
+
+  app.delete('/delete-order', CheckAuth, apiController.deleteRace);
 };
 module.exports = router;

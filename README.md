@@ -10,8 +10,8 @@
     - [Get airport](https://github.com/top-aleksei/airway-backend#get-airport)
     - [Get races](https://github.com/top-aleksei/airway-backend#get-races)
     - [Save races](https://github.com/top-aleksei/airway-backend#save-races)
-    - [Get saved races](https://github.com/top-aleksei/airway-backend#get-saved-races)
-
+    - [Get orders](https://github.com/top-aleksei/airway-backend#get-orders)
+    - [Delete order](https://github.com/top-aleksei/airway-backend#delete-order)
 
 
 
@@ -914,15 +914,15 @@ Save races.
 
 
 
-  **Get saved races**
+  **Get orders**
 ----
-Saved races.
+Saved orders.
 
 <details>
 
 * **URL**
 
-    /get-saved-race
+    /get-orders
 
 * **Method:**
 
@@ -955,6 +955,7 @@ Saved races.
     ```json
        [
     {
+        "_id": "645cbf3829d412e59ef4787c",
         "contactDetails": {
             "countryCode": {
                 "country": "Austria",
@@ -1083,6 +1084,64 @@ Saved races.
     or 
   
     {"message": "Get races error"}
+  
+* **Notes:**
+
+    None
+
+</details>
+
+
+  **Delete order**
+----
+Delete order.
+
+<details>
+
+* **URL**
+
+    /delete-order
+
+* **Method:**
+
+    `DELETE`
+
+* **Headers:**
+
+'Content-Type': 'application/json'
+  
+'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDk5MzEzYjhlY2MyODQ5MTExMGU0OSIsImlhdCI6MTY4MjY2MTY1NCwiZXhwIjoxNjgyNzQ4MDU0fQ.-CdxY4BSsBx32BIcb7RiIjOXZGueamNbKj2rnBY10pc'
+
+*  **URL Params**
+
+    None
+
+* **Query Params**
+
+    order: id order
+
+    example: ?order=jkhshghjkasjkdhjkas
+
+* **Data Params**
+
+    None
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** 
+    ```json
+       { "message": "Order deleted successfully" }
+    ```
+* **Error Response:**
+  
+    if not finded
+       
+    {"message": "Order not found"}
+
+    or 
+  
+    {"message": "Delete order error"}
   
 * **Notes:**
 

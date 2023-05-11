@@ -265,13 +265,29 @@ class ApiController {
       const id = decodeURIComponent(req.query.id);
       const orders = await OrderModel.find({
         userId: id,
-      }).select('-_id -passengers._id -routes.flights._id -routes._id -userId -__v');
+      }).select('-passengers._id -routes.flights._id -routes._id -userId -__v');
       
 
       return res.status(200).json( orders );
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Get races error` });
+      res.status(400).json({ message: `Saved error` });
+    }
+  }
+
+  async deleteRace(req, res) {
+    
+    const idOrder = decodeURIComponent(req.query.order);
+    try {
+      const deletedOrder = await OrderModel.findByIdAndDelete(idOrder);
+    if (!deletedOrder) {
+      return res.status(404).send({ message: `Order not found` });
+    }
+
+      return res.status(200).json({ message: `Order deleted successfully` });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Delete order error` });
     }
   }
 
