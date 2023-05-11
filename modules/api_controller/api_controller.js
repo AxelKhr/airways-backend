@@ -197,50 +197,24 @@ class ApiController {
         );
       }
 
+      const routes = data.routes;
 
+      for (let i = 0; i < routes.length; i++) {
+        const route = routes[i];
+        const { departureDate, departureAirportCode, arrivalAirportCode } =
+          route;
+        const foundRoute = await RouteModel.findOne({
+          departureDate,
+          departureAirportCode,
+          arrivalAirportCode,
+        }).select('-flights._id');
 
-
-
-
-
-
-      
-        const routes = data.routes;
-      
-        for (let i = 0; i < routes.length; i++) {
-          const route = routes[i];
-          const { departureDate, departureAirportCode, arrivalAirportCode } = route;
-          const foundRoute = await RouteModel.findOne(
-            {
-              departureDate,
-              departureAirportCode,
-              arrivalAirportCode,
-            }
-          ).select('-flights._id');
-          
-          if (foundRoute) {
-            data.routes[i].flights = foundRoute.flights;
-            data.routes[i].ticketsCost = foundRoute.ticketsCost;
- 
-          }
-
+        if (foundRoute) {
+          data.routes[i].flights = foundRoute.flights;
+          data.routes[i].ticketsCost = foundRoute.ticketsCost;
         }
-      
-      
+      }
 
-
-
-
-
-
-
-
-
-
-
-
-
-      
       return res.status(200).json(data);
     } catch (e) {
       console.log(e);
@@ -289,19 +263,12 @@ class ApiController {
   async getSavedRace(req, res) {
     try {
       const id = decodeURIComponent(req.query.id);
-      const bookingsWithConnecting = await BookingWithConnecting.find({
+      const orders = await OrderModel.find({
         userId: id,
-      });
-      const bookingsWithoutConnecting = await BookingWithoutConnecting.find({
-        userId: id,
-      });
+      }).select('-_id -passengers._id -routes.flights._id -routes._id -userId -__v');
+      
 
-      const allBookings = [
-        ...bookingsWithConnecting,
-        ...bookingsWithoutConnecting,
-      ];
-
-      return res.status(200).json(allBookings);
+      return res.status(200).json( orders );
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Get races error` });
