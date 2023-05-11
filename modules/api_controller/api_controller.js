@@ -222,7 +222,7 @@ class ApiController {
     }
   }
 
-  async saveRace(req, res) {
+  async saveOrder(req, res) {
     try {
       const userId = decodeURIComponent(req.query.id);
       const routes = req.body.routes;
@@ -260,29 +260,27 @@ class ApiController {
     }
   }
 
-  async getSavedRace(req, res) {
+  async getSavedOrders(req, res) {
     try {
       const id = decodeURIComponent(req.query.id);
       const orders = await OrderModel.find({
         userId: id,
       }).select('-passengers._id -routes.flights._id -routes._id -userId -__v');
-      
 
-      return res.status(200).json( orders );
+      return res.status(200).json(orders);
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Saved error` });
     }
   }
 
-  async deleteRace(req, res) {
-    
+  async deleteOrder(req, res) {
     const idOrder = decodeURIComponent(req.query.order);
     try {
       const deletedOrder = await OrderModel.findByIdAndDelete(idOrder);
-    if (!deletedOrder) {
-      return res.status(404).send({ message: `Order not found` });
-    }
+      if (!deletedOrder) {
+        return res.status(404).send({ message: `Order not found` });
+      }
 
       return res.status(200).json({ message: `Order deleted successfully` });
     } catch (e) {
@@ -291,22 +289,15 @@ class ApiController {
     }
   }
 
-  async editRace(req, res) {
+  async editOrder(req, res) {
     try {
-      // const id = decodeURIComponent(req.query.id);
-      // const bookingsWithConnecting = await BookingWithConnecting.find({
-      //   userId: id,
-      // });
-      // const bookingsWithoutConnecting = await BookingWithoutConnecting.find({
-      //   userId: id,
-      // });
+      const userId = decodeURIComponent(req.query.id);
+      const orderId = req.body._id;
+      const updatedOrder = req.body;
+      const filter = { userId, _id: orderId };
+      const result = await OrderModel.updateOne(filter, { $set: updatedOrder });
 
-      // const allBookings = [
-      //   ...bookingsWithConnecting,
-      //   ...bookingsWithoutConnecting,
-      // ];
-
-      return res.status(200).json(11);
+      return res.status(200).json( updatedOrder );
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Get races error` });

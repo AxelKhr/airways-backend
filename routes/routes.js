@@ -21,12 +21,12 @@ const router = (app) => {
 
   app.get('/auth/check-auth', CheckAuth, ApiAuthController.checkAuth);
 
-  app.post('/save-race', CheckAuth, apiController.saveRace);
+  app.post('/save-order', CheckAuth, apiController.saveOrder);
 
-  app.get('/get-orders', CheckAuth, apiController.getSavedRace);
+  app.get('/get-orders', CheckAuth, apiController.getSavedOrders);
 
-  app.put('/edit-order', CheckAuth, apiController.editRace);
+  app.put('/edit-order', CheckAuth, apiController.editOrder);
 
-  app.delete('/delete-order', CheckAuth, apiController.deleteRace);
+  app.delete('/delete-order', CheckAuth, apiController.deleteOrder);
 };
 module.exports = router;

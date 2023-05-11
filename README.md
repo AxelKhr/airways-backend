@@ -9,9 +9,10 @@
     - [Get country code](https://github.com/top-aleksei/airway-backend#get-country-code)
     - [Get airport](https://github.com/top-aleksei/airway-backend#get-airport)
     - [Get races](https://github.com/top-aleksei/airway-backend#get-races)
-    - [Save races](https://github.com/top-aleksei/airway-backend#save-races)
+    - [Save order](https://github.com/top-aleksei/airway-backend#save-order)
     - [Get orders](https://github.com/top-aleksei/airway-backend#get-orders)
     - [Delete order](https://github.com/top-aleksei/airway-backend#delete-order)
+    - [Edit order](https://github.com/top-aleksei/airway-backend#edit-order)
 
 
 
@@ -639,15 +640,15 @@ Generate races.
 
 
 
-  **Save races**
+  **Save order**
 ----
-Save races.
+Save order.
 
 <details>
 
 * **URL**
 
-    /save-race
+    /save-order
 
 * **Method:**
 
@@ -916,7 +917,7 @@ Save races.
 
   **Get orders**
 ----
-Saved orders.
+Get saved orders.
 
 <details>
 
@@ -1142,6 +1143,303 @@ Delete order.
     or 
   
     {"message": "Delete order error"}
+  
+* **Notes:**
+
+    None
+
+</details>
+
+
+
+  **Edit order**
+----
+Edit order.
+
+<details>
+
+* **URL**
+
+    /edit-order
+
+* **Method:**
+
+    `PUT`
+
+* **Headers:**
+
+'Content-Type': 'application/json'
+  
+'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDk5MzEzYjhlY2MyODQ5MTExMGU0OSIsImlhdCI6MTY4MjY2MTY1NCwiZXhwIjoxNjgyNzQ4MDU0fQ.-CdxY4BSsBx32BIcb7RiIjOXZGueamNbKj2rnBY10pc'
+
+*  **URL Params**
+
+    None
+
+* **Query Params**
+
+    id: userID
+
+    example: ?id=dfsdfsjljflksd345n34jkwjhf
+
+* **Data Params**
+
+    ```json
+       {
+        "_id": "645cbf3829d412e59ef4787c",
+        "contactDetails": {
+            "countryCode": {
+                "country": "Austria",
+                "code": "+34",
+                "phoneDigits": 10
+            },
+            "phoneNumber": 34534690934,
+            "email": "email@email.com"
+        },
+        "departureAirportCode": "WAW",
+        "arrivalAirportCode": "DUB",
+        "departureDate": "2023-05-27T00:00:00.000Z",
+        "returnDate": "2023-05-31T00:00:00.000Z",
+        "roundTrip": 1,
+        "passengers": [
+            {
+                "firstName": "Max",
+                "lastName": "Smith",
+                "dateBirth": "2012-07-12T00:00:00.000Z",
+                "sex": "male",
+                "needAssistance": true,
+                "baggage": "23 kg",
+                "type": "Children"
+            },
+            {
+                "firstName": "John",
+                "lastName": "Smith",
+                "dateBirth": "2014-01-19T00:00:00.000Z",
+                "sex": "male",
+                "needAssistance": true,
+                "baggage": "23 kg",
+                "type": "Children"
+            }
+        ],
+        "routes": [
+            {
+                "ticketsCost": {
+                    "adult": {
+                        "totalCost": "162.15",
+                        "fare": "105.40",
+                        "tax": "56.75"
+                    },
+                    "children": {
+                        "totalCost": "126.48",
+                        "fare": "69.56",
+                        "tax": "56.91"
+                    },
+                    "infant": {
+                        "totalCost": "51.89",
+                        "fare": "45.66",
+                        "tax": "6.23"
+                    }
+                },
+                "departureDate": "2023-05-27T00:00:00.000Z",
+                "departureAirportCode": "WAW",
+                "arrivalAirportCode": "DUB",
+                "flights": [
+                    {
+                        "departureAirportCode": "WAW",
+                        "departureDateTime": "2023-05-27T08:30:00.000Z",
+                        "arrivalAirportCode": "DUB",
+                        "arrivalDateTime": "2023-05-27T09:50:00.000Z",
+                        "numberRace": "NH4847",
+                        "seatNumbers": [
+                            "40f",
+                            "41f",
+                            "42f",
+                            "43f",
+                            "44f"
+                        ],
+                        "freeSeats": 8,
+                        "flightTime": 140
+                    }
+                ]
+            },
+            {
+                "ticketsCost": {
+                    "adult": {
+                        "totalCost": "153.34",
+                        "fare": "99.67",
+                        "tax": "53.67"
+                    },
+                    "children": {
+                        "totalCost": "119.61",
+                        "fare": "65.78",
+                        "tax": "53.82"
+                    },
+                    "infant": {
+                        "totalCost": "49.07",
+                        "fare": "43.18",
+                        "tax": "5.89"
+                    }
+                },
+                "departureDate": "2023-05-31T00:00:00.000Z",
+                "departureAirportCode": "DUB",
+                "arrivalAirportCode": "WAW",
+                "flights": [
+                    {
+                        "departureAirportCode": "DUB",
+                        "departureDateTime": "2023-05-31T05:20:00.000Z",
+                        "arrivalAirportCode": "WAW",
+                        "arrivalDateTime": "2023-05-31T08:40:00.000Z",
+                        "numberRace": "AA8749",
+                        "seatNumbers": [
+                            "34c",
+                            "35c",
+                            "36c",
+                            "37c",
+                            "38c"
+                        ],
+                        "freeSeats": 7,
+                        "flightTime": 140
+                    }
+                ]
+            }
+        ]
+    }
+    ```
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** 
+    ```json
+        "updatedOrder": {
+            "_id": "645cbf3829d412e59ef4787c",
+            "contactDetails": {
+                "countryCode": {
+                    "country": "Poland",
+                    "code": "+34",
+                    "phoneDigits": 10
+                },
+                "phoneNumber": 34534690934,
+                "email": "email@email.com"
+            },
+            "departureAirportCode": "IOP",
+            "arrivalAirportCode": "RUST",
+            "departureDate": "2023-05-27T00:00:00.000Z",
+            "returnDate": "2023-05-31T00:00:00.000Z",
+            "roundTrip": 1,
+            "passengers": [
+                {
+                    "firstName": "Max",
+                    "lastName": "Smith",
+                    "dateBirth": "2012-07-12T00:00:00.000Z",
+                    "sex": "male",
+                    "needAssistance": true,
+                    "baggage": "23 kg",
+                    "type": "Children"
+                },
+                {
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "dateBirth": "2014-01-19T00:00:00.000Z",
+                    "sex": "male",
+                    "needAssistance": true,
+                    "baggage": "23 kg",
+                    "type": "Children"
+                }
+            ],
+            "routes": [
+                {
+                    "ticketsCost": {
+                        "adult": {
+                            "totalCost": "162.15",
+                            "fare": "105.40",
+                            "tax": "56.75"
+                        },
+                        "children": {
+                            "totalCost": "126.48",
+                            "fare": "69.56",
+                            "tax": "56.91"
+                        },
+                        "infant": {
+                            "totalCost": "51.89",
+                            "fare": "45.66",
+                            "tax": "6.23"
+                        }
+                    },
+                    "departureDate": "2023-05-27T00:00:00.000Z",
+                    "departureAirportCode": "WAW",
+                    "arrivalAirportCode": "DUB",
+                    "flights": [
+                        {
+                            "departureAirportCode": "WAW",
+                            "departureDateTime": "2023-05-27T08:30:00.000Z",
+                            "arrivalAirportCode": "DUB",
+                            "arrivalDateTime": "2023-05-27T09:50:00.000Z",
+                            "numberRace": "NH4847",
+                            "seatNumbers": [
+                                "40f",
+                                "41f",
+                                "42f",
+                                "43f",
+                                "44f"
+                            ],
+                            "freeSeats": 8,
+                            "flightTime": 140
+                        }
+                    ]
+                },
+                {
+                    "ticketsCost": {
+                        "adult": {
+                            "totalCost": "153.34",
+                            "fare": "99.67",
+                            "tax": "53.67"
+                        },
+                        "children": {
+                            "totalCost": "119.61",
+                            "fare": "65.78",
+                            "tax": "53.82"
+                        },
+                        "infant": {
+                            "totalCost": "49.07",
+                            "fare": "43.18",
+                            "tax": "5.89"
+                        }
+                    },
+                    "departureDate": "2023-05-31T00:00:00.000Z",
+                    "departureAirportCode": "DUB",
+                    "arrivalAirportCode": "WAW",
+                    "flights": [
+                        {
+                            "departureAirportCode": "DUB",
+                            "departureDateTime": "2023-05-31T05:20:00.000Z",
+                            "arrivalAirportCode": "WAW",
+                            "arrivalDateTime": "2023-05-31T08:40:00.000Z",
+                            "numberRace": "AA8749",
+                            "seatNumbers": [
+                                "34c",
+                                "35c",
+                                "36c",
+                                "37c",
+                                "38c"
+                            ],
+                            "freeSeats": 7,
+                            "flightTime": 140
+                        }
+                    ]
+                }
+            ]
+        }
+    ```
+* **Error Response:**
+  
+    if not finded
+       
+    {"message": "Order not found"}
+
+    or 
+  
+    {"message": "Order edit error"}
   
 * **Notes:**
 
