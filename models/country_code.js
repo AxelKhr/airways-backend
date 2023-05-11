@@ -6,4 +6,5 @@ const CountryCode = new Schema({
   phoneDigits: {type: Number, unique: false}
 })
 
-module.exports = model('CountryCode', CountryCode);
+const CountryCodeModel = model('CountryCode', CountryCode);
+module.exports = CountryCodeModel;

@@ -12,4 +12,5 @@ const ProfileUser = new Schema({
   citizenship: {type: String, required: true}
 })
 
-module.exports = model('ProfileUser', ProfileUser);
+const ProfileUserModel = model('ProfileUser', ProfileUser);
+module.exports = ProfileUserModel;

@@ -1,7 +1,10 @@
-const CountryCode = require('../../models/country_code');
-const Airport = require('../../models/airport');
-const BookingWithConnecting = require('../../models/booking_with_connecting');
-const BookingWithoutConnecting = require('../../models/booking_without_connecting');
+const mongoose = require('mongoose');
+
+const CountryCodeModel = require('../../models/country_code');
+const AirportModel = require('../../models/airport');
+const OrderModel = require('../../models/order');
+const RouteModel = require('../../models/route');
+const ProfileUserModel = require('../../models/profile_user');
 
 const {
   getCoordFunction,
@@ -27,8 +30,8 @@ class ApiController {
   async getCountryCodes(req, res) {
     try {
       let countryCodes = [];
-      if ((await CountryCode.count()) !== 0) {
-        countryCodes = await CountryCode.find()
+      if ((await CountryCodeModel.count()) !== 0) {
+        countryCodes = await CountryCodeModel.find()
           .lean()
           .select('country code phoneDigits');
         countryCodes = countryCodes.map((code) => {
@@ -49,8 +52,10 @@ class ApiController {
   async getAirports(req, res) {
     try {
       let airports = [];
-      if ((await Airport.count()) !== 0) {
-        airports = await Airport.find().lean().select('code name city country');
+      if ((await AirportModel.count()) !== 0) {
+        airports = await AirportModel.find()
+          .lean()
+          .select('code name city country');
         airports.sort((a, b) => (a.code > b.code ? 1 : -1));
         airports = airports.map((data) => {
           return {
@@ -90,14 +95,14 @@ class ApiController {
         : 5;
       const tickets = countAdult + countChildren;
 
-      const arrivalAirport = await Airport.findOne({
+      const arrivalAirport = await AirportModel.findOne({
         code: arrivalAirportCode,
       });
       const arrivalAirportName = arrivalAirport.name;
       const arrivalAirportCity = arrivalAirport.city;
       const arrivalAirportCountry = arrivalAirport.country;
 
-      const departureAirport = await Airport.findOne({
+      const departureAirport = await AirportModel.findOne({
         code: departureAirportCode,
       });
 
@@ -151,60 +156,6 @@ class ApiController {
         cost = cost + cost * 0.2;
       }
 
-      // const data = {
-      //   departureAirportCode,
-      //   departureAirportName,
-      //   departureAirportCity,
-      //   departureAirportCountry,
-      //   timeZoneDepartureAirport,
-      //   arrivalAirportCode,
-      //   arrivalAirportName,
-      //   arrivalAirportCity,
-      //   arrivalAirportCountry,
-      //   timeZoneArrivalAirport,
-      //   connectingAirport: connectingAirport
-      //     ? {
-      //         code: connectingAirport.code,
-      //         name: connectingAirport.name,
-      //         city: connectingAirport.city,
-      //         country: connectingAirport.country,
-      //         timezone: connectingAirport.timezone,
-      //       }
-      //     : null,
-      //   races: getRacesFunction(
-      //     {
-      //       departureDate: new Date(departureDate),
-      //       tickets,
-      //       flightTime,
-      //       timeZoneDepartureAirport,
-      //       timeZoneArrivalAirport,
-      //       cost,
-      //       connectingAirport,
-      //     },
-      //     amountFlights
-      //   ),
-      //   returnRaces: {
-      //     flights: roundTrip
-      //       ? [
-      //           getRacesFunction(
-      //             {
-      //               departureDate: new Date(returnDate),
-      //               tickets,
-      //               flightTime,
-      //               timeZoneDepartureAirport: timeZoneArrivalAirport,
-      //               timeZoneArrivalAirport: timeZoneDepartureAirport,
-      //               cost,
-      //               connectingAirport,
-      //               departureAirportCode,
-      //               arrivalAirportCode,
-      //             },
-      //             amountFlights
-      //           ),
-      //         ]
-      //       : null,
-      //   },
-      // };
-
       const data = {
         departureAirportCode,
         arrivalAirportCode,
@@ -246,6 +197,50 @@ class ApiController {
         );
       }
 
+
+
+
+
+
+
+
+      
+        const routes = data.routes;
+      
+        for (let i = 0; i < routes.length; i++) {
+          const route = routes[i];
+          const { departureDate, departureAirportCode, arrivalAirportCode } = route;
+          const foundRoute = await RouteModel.findOne(
+            {
+              departureDate,
+              departureAirportCode,
+              arrivalAirportCode,
+            }
+          ).select('-flights._id');
+          
+          if (foundRoute) {
+            data.routes[i].flights = foundRoute.flights;
+            data.routes[i].ticketsCost = foundRoute.ticketsCost;
+ 
+          }
+
+        }
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
       return res.status(200).json(data);
     } catch (e) {
       console.log(e);
@@ -255,17 +250,36 @@ class ApiController {
 
   async saveRace(req, res) {
     try {
-      let Booking;
-      if (req.body.connectingAirport === null) {
-        Booking = BookingWithoutConnecting;
-      } else {
-        Booking = BookingWithConnecting;
+      const userId = decodeURIComponent(req.query.id);
+      const routes = req.body.routes;
+      const order = req.body.order;
+      order.userId = userId;
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: 'Wrong format userID' });
       }
 
-      const booking = new Booking(req.body);
-      await booking.save();
+      const user = await ProfileUserModel.findById(userId);
 
-      return res.status(200).json({ message: `Data saved successfully` });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      for (const route of routes) {
+        const routeExists = await RouteModel.findOne({
+          departureDate: route.departureDate,
+          departureAirportCode: route.departureAirportCode,
+          arrivalAirportCode: route.arrivalAirportCode,
+        });
+        if (!routeExists) {
+          const savedRoute = await RouteModel.create(route);
+        }
+      }
+
+      const savedOrder = await OrderModel.create(order);
+
+      return res.status(200).json({
+        message: `Data saved successfully order ID: ${savedOrder._id}`,
+      });
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Saved error` });
@@ -293,34 +307,28 @@ class ApiController {
       res.status(400).json({ message: `Get races error` });
     }
   }
+
+  async editRace(req, res) {
+    try {
+      // const id = decodeURIComponent(req.query.id);
+      // const bookingsWithConnecting = await BookingWithConnecting.find({
+      //   userId: id,
+      // });
+      // const bookingsWithoutConnecting = await BookingWithoutConnecting.find({
+      //   userId: id,
+      // });
+
+      // const allBookings = [
+      //   ...bookingsWithConnecting,
+      //   ...bookingsWithoutConnecting,
+      // ];
+
+      return res.status(200).json(11);
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Get races error` });
+    }
+  }
 }
 
 module.exports = new ApiController();
-
-// {
-//   departureAirportCode: string,
-//   arrivalAirportCode: string,
-//   departureDate: string,
-//   returnDate: string,
-//   roundTrip: number,
-//   routes: [
-//     {
-//       departureDate: string,
-//       departureAirportCode: string,
-//       arrivalAirportCode: string,
-//       flights: [
-//         {
-//           departureAirportCode: string,
-//           departureDateTime: Date,
-//           arrivalAirportCode: string,
-//           arrivalDateTime: Date,
-//           numberRace: string,
-//           seatNumbers: string[],
-//           freeSeats: number,
-//           flightTime: number,
-//         }
-//       ],
-//       ticketsCost: ITicketCost,
-//     }
-//   ];
-// }

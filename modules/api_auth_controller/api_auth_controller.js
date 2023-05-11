@@ -1,4 +1,4 @@
-const ProfileUser = require('../../models/profile_user');
+const ProfileUserModel = require('../../models/profile_user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { secret } = require('../../configJwt');
@@ -25,7 +25,7 @@ class ApiAuthController {
         citizenship,
       } = req.body;
 
-      const candidate = await ProfileUser.findOne({ email });
+      const candidate = await ProfileUserModel.findOne({ email });
 
       if (candidate) {
         return res
@@ -36,7 +36,7 @@ class ApiAuthController {
       const hashPassword = bcrypt.hashSync(password, 7);
       const dateOfBirth = new Date(dateBirth);
 
-      const user = new ProfileUser({
+      const user = new ProfileUserModel({
         firstName,
         lastName,
         email,
@@ -59,7 +59,7 @@ class ApiAuthController {
   async login(req, res) {
     try {
       const { email, password } = req.body;
-      const user = await ProfileUser.findOne({ email });
+      const user = await ProfileUserModel.findOne({ email });
 
       if (!user) {
         return res.status(404).json({ message: `User ${email} not found` });
@@ -93,7 +93,7 @@ class ApiAuthController {
   async checkAuth(req, res) {
     try {
       const id = decodeURIComponent(req.query.id);
-      ProfileUser.findById(id)
+      ProfileUserModel.findById(id)
         .then((user) => {
           const userProfile = {
             firstName: user.firstName,

@@ -12,5 +12,5 @@ const Airport = new Schema({
   timezone: {type: Number, unique: false},
 })
 
-
-module.exports = model('Airport', Airport);
+const AirportModel = model('Airport', Airport);
+module.exports = AirportModel;
