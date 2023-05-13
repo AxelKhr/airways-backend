@@ -55,7 +55,7 @@ class ApiController {
       if ((await AirportModel.count()) !== 0) {
         airports = await AirportModel.find()
           .lean()
-          .select('code name city country');
+          .select('code name city country timezone');
         airports.sort((a, b) => (a.code > b.code ? 1 : -1));
         airports = airports.map((data) => {
           return {
@@ -63,6 +63,7 @@ class ApiController {
             name: data.name,
             city: data.city,
             country: data.country,
+            timezone: data.timezone,
           };
         });
       }
