@@ -8,7 +8,7 @@ const ProfileUser = new Schema({
   dateBirth: {type: String, required: true},
   sex: {type: String, enum: ['male', 'female'], required: true},
   countryCode: {type: String, required: true},
-  phoneNumber: {type: Number, required: true},
+  phoneNumber: {type: String, required: true},
   citizenship: {type: String, required: true}
 })
 

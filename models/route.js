@@ -12,7 +12,10 @@ const Route = new Schema({
       arrivalDateTime: { type: Date, required: true },
       numberRace: { type: String, required: true },
       seatNumbers: { type: [String], required: true },
-      freeSeats: { type: Number, required: true },
+      seats: {
+        freeSeats: { type: Number, required: true },
+        totalSeats: { type: Number, required: true },
+      },
       flightTime: { type: Number, required: true },
     },
   ],

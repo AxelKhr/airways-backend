@@ -2,6 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const Order = new Schema({
   userId: { type: String, required: true },
+  paid: { type: Boolean },
   departureAirportCode: { type: String, required: true },
   arrivalAirportCode: { type: String, required: true },
   departureDate: { type: String, required: true },
@@ -29,7 +30,7 @@ const Order = new Schema({
       code: { type: String, required: true },
       phoneDigits: { type: Number, required: true },
     },
-    phoneNumber: { type: Number, required: true },
+    phoneNumber: { type: String, required: true },
     email: { type: String, required: true },
   },
 
@@ -46,7 +47,10 @@ const Order = new Schema({
           arrivalDateTime: { type: Date, required: true },
           numberRace: { type: String, required: true },
           seatNumbers: { type: [String], required: true },
-          freeSeats: { type: Number, required: true },
+          seats: {
+            freeSeats: { type: Number, required: true },
+            totalSeats: { type: Number, required: true },
+          },
           flightTime: { type: Number, required: true },
         },
       ],

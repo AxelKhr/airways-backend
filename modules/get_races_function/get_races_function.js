@@ -1,3 +1,4 @@
+const { getStartDateFunction } = require('../get_start_date_function/get_start_date_function');
 const {
   getNumberRaceFunction,
 } = require('../get_number_race_function/get_number_race_function');
@@ -10,18 +11,22 @@ const {
 const {
   getCoefficientFunction,
 } = require('../get_coefficient_function/get_coefficient_function');
+const {
+  getTotalSeatsFunction,
+} = require('../get_total_seats_function/get_total_seats_function');
 module.exports.getRacesFunction = function (data, days) {
   const flights = [];
   let currentDate = new Date(data.departureDate);
-
+  const startDate = getStartDateFunction(currentDate, days);
+  days = days > 1 ? days * 2 + 1 : days;
   for (let i = 0; i < days; i++) {
-    const departureDateTime = new Date(currentDate.getTime());
+    const departureDateTime = days > 1 ? new Date(startDate.getTime()) : new Date(data.departureDate);
     let skipDay = false;
     if (Math.random() <= 0.08) {
       skipDay = true;
     }
 
-    departureDateTime.setDate(currentDate.getDate() + i);
+    departureDateTime.setDate(startDate.getDate() + i);
 
     if (data.connectingAirport === null) {
       departureDateTime.setHours(
@@ -62,7 +67,10 @@ module.exports.getRacesFunction = function (data, days) {
                 arrivalDateTime,
                 numberRace: getNumberRaceFunction(),
                 seatNumbers: getSeatsNumberFunction(data.tickets),
-                freeSeats,
+                seats: {
+                  freeSeats,
+                  totalSeats: getTotalSeatsFunction(freeSeats, data.flightTime),
+                },
                 flightTime: data.flightTime,
               },
             ],
@@ -152,6 +160,7 @@ module.exports.getRacesFunction = function (data, days) {
 
       for (let j = 0; j < 2; j++) {
         let transitRace;
+        const freeSeats = Math.floor(Math.random() * 10) + data.tickets + i * 5;
         if (j === 0) {
           transitRace = {
             departureAirportCode: data.departureAirportCode,
@@ -160,7 +169,13 @@ module.exports.getRacesFunction = function (data, days) {
             arrivalDateTime: arrivalConectingAeroportDateTime,
             numberRace: getNumberRaceFunction(),
             seatNumbers: getSeatsNumberFunction(data.tickets),
-            freeSeats: Math.floor(Math.random() * 10) + data.tickets + i * 5,
+            seats: {
+              freeSeats,
+              totalSeats: getTotalSeatsFunction(
+                freeSeats,
+                data.connectingAirport.flightDepartureTime
+              ),
+            },
             flightTime: data.connectingAirport.flightDepartureTime,
           };
         } else {
@@ -171,7 +186,13 @@ module.exports.getRacesFunction = function (data, days) {
             arrivalDateTime,
             numberRace: getNumberRaceFunction(),
             seatNumbers: getSeatsNumberFunction(data.tickets),
-            freeSeats: Math.floor(Math.random() * 10) + data.tickets + i * 5,
+            seats: {
+              freeSeats,
+              totalSeats: getTotalSeatsFunction(
+                freeSeats,
+                data.connectingAirport.flightArrivalTime
+              ),
+            },
             flightTime: data.connectingAirport.flightArrivalTime,
           };
         }

@@ -13,6 +13,8 @@ const router = (app) => {
 
   app.get('/airports', apiController.getAirports);
 
+  app.get('/citizenship', apiController.getCitizenship)
+
   app.get('/races', apiController.getRace);
 
   app.post('/auth/registration', ApiAuthController.setRegistration);
@@ -25,8 +27,13 @@ const router = (app) => {
 
   app.get('/get-orders', CheckAuth, apiController.getSavedOrders);
 
+  app.get('/get-paid-orders', CheckAuth, apiController.getPaidOrders);
+
   app.put('/edit-order', CheckAuth, apiController.editOrder);
 
   app.delete('/delete-order', CheckAuth, apiController.deleteOrder);
+
+  app.put('/pay-order', CheckAuth, apiController.payOrder);
+
 };
 module.exports = router;

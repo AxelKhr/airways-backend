@@ -8,11 +8,14 @@
 - **Site functional**
     - [Get country code](https://github.com/top-aleksei/airway-backend#get-country-code)
     - [Get airport](https://github.com/top-aleksei/airway-backend#get-airport)
+    - [Get citizenship](https://github.com/top-aleksei/airway-backend#get-citizenship)
     - [Get races](https://github.com/top-aleksei/airway-backend#get-races)
     - [Save order](https://github.com/top-aleksei/airway-backend#save-order)
     - [Get orders](https://github.com/top-aleksei/airway-backend#get-orders)
+    - [Get paid orders](https://github.com/top-aleksei/airway-backend#get-paid-orders)
     - [Delete order](https://github.com/top-aleksei/airway-backend#delete-order)
     - [Edit order](https://github.com/top-aleksei/airway-backend#edit-order)
+    - [Pay order](https://github.com/top-aleksei/airway-backend#pay-order)
 
 
 
@@ -130,7 +133,7 @@ Login user
               "dateBirth": "Mon Jan 01 1990 01:00:00 GMT+0100 (Central European Standard Time)",
               "sex": "male",
               "countryCode": "US",
-              "phoneNumber": 1234567890,
+              "phoneNumber": "1234567890",
               "citizenship": "American"
           }
         }
@@ -201,7 +204,7 @@ Check Auth user
       "dateBirth": "Mon Jan 01 1990 01:00:00 GMT+0100 (Central European Standard Time)",
       "sex": "male",
       "countryCode": "US",
-      "phoneNumber": 1234567890,
+      "phoneNumber": "1234567890",
       "citizenship": "American"
     }
     ```
@@ -355,6 +358,63 @@ Returns all airport.
 </details>
 
 
+**Get citizenship**
+----
+Returns list citizenship.
+
+<details>
+
+* **URL**
+
+    /citizenship
+
+* **Method:**
+
+    `GET`
+
+* **Headers:**
+
+'Content-Type': 'application/json'
+
+*  **URL Params**
+
+    None
+
+* **Query Params**
+
+    None
+
+* **Data Params**
+
+    None
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** 
+    ```json
+        [
+            "Afghan",
+            "Albanian",
+            "Algerian",
+            "American",
+            "Andorran",
+            "Angolan",
+            "Antiguans",
+        ]
+    ```
+ 
+* **Error Response:**
+
+    {message: `Get all citizenship error`}
+  
+* **Notes:**
+
+    None
+
+</details>
+
+
 **Get races**
 ----
 Generate races.
@@ -395,7 +455,8 @@ Generate races.
        
      "countInfant":"number";
        
-     "amountFlights":"number"; optional, by default 5
+     "amountFlights":"number"; optional, by default 5, 
+     if you set 1, only 1 flight will return. If you send more than 1, returned amountFlights * 2 + 1 (by default 11 flights)
        
 
      example /races?departureAirportCode=WAW&arrivalAirportCode=DUB&departureDate=2023-04-27T00:00:00.000Z&returnDate=2023-04-28T00:00:00.000Z&roundTrip=1&countAdult=2&countChildren=3&countInfant=2&amountFlights=1
@@ -790,7 +851,7 @@ Save order.
             "code": "+34",
             "phoneDigits": 10
             },
-            "phoneNumber": 34534690934,
+            "phoneNumber": "34534690934",
                 "email": "email@email.com"
         },
 
@@ -963,7 +1024,7 @@ Get saved orders.
                 "code": "+34",
                 "phoneDigits": 10
             },
-            "phoneNumber": 34534690934,
+            "phoneNumber": "34534690934",
             "email": "email@email.com"
         },
         "departureAirportCode": "WAW",
@@ -1076,6 +1137,12 @@ Get saved orders.
     },
     ]
     ```
+
+    or 
+    ```json
+        {"message": "Orders not found"}
+    ```
+
 * **Error Response:**
   
     if not verified
@@ -1084,7 +1151,191 @@ Get saved orders.
 
     or 
   
-    {"message": "Get races error"}
+    {"message": "Get orders error"}
+  
+* **Notes:**
+
+    None
+
+</details>
+
+
+  **Get paid orders**
+----
+Get paid orders.
+
+<details>
+
+* **URL**
+
+    /get-paid-orders
+
+* **Method:**
+
+    `GET`
+
+* **Headers:**
+
+'Content-Type': 'application/json'
+  
+'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDk5MzEzYjhlY2MyODQ5MTExMGU0OSIsImlhdCI6MTY4MjY2MTY1NCwiZXhwIjoxNjgyNzQ4MDU0fQ.-CdxY4BSsBx32BIcb7RiIjOXZGueamNbKj2rnBY10pc'
+
+*  **URL Params**
+
+    None
+
+* **Query Params**
+
+    id: userID
+
+    example: ?id=dfsdfsjljflksd345n34jkwjhf
+
+* **Data Params**
+
+    None
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** 
+    ```json
+       [
+    {
+        "_id": "645cbf3829d412e59ef4787c",
+        "contactDetails": {
+            "countryCode": {
+                "country": "Austria",
+                "code": "+34",
+                "phoneDigits": 10
+            },
+            "phoneNumber": "34534690934",
+            "email": "email@email.com"
+        },
+        "departureAirportCode": "WAW",
+        "arrivalAirportCode": "DUB",
+        "departureDate": "2023-05-27T00:00:00.000Z",
+        "returnDate": "2023-05-31T00:00:00.000Z",
+        "roundTrip": 1,
+        "passengers": [
+            {
+                "firstName": "Max",
+                "lastName": "Smith",
+                "dateBirth": "2012-07-12T00:00:00.000Z",
+                "sex": "male",
+                "needAssistance": true,
+                "baggage": "23 kg",
+                "type": "Children"
+            },
+            {
+                "firstName": "John",
+                "lastName": "Smith",
+                "dateBirth": "2014-01-19T00:00:00.000Z",
+                "sex": "male",
+                "needAssistance": true,
+                "baggage": "23 kg",
+                "type": "Children"
+            }
+        ],
+        "routes": [
+            {
+                "ticketsCost": {
+                    "adult": {
+                        "totalCost": "162.15",
+                        "fare": "105.40",
+                        "tax": "56.75"
+                    },
+                    "children": {
+                        "totalCost": "126.48",
+                        "fare": "69.56",
+                        "tax": "56.91"
+                    },
+                    "infant": {
+                        "totalCost": "51.89",
+                        "fare": "45.66",
+                        "tax": "6.23"
+                    }
+                },
+                "departureDate": "2023-05-27T00:00:00.000Z",
+                "departureAirportCode": "WAW",
+                "arrivalAirportCode": "DUB",
+                "flights": [
+                    {
+                        "departureAirportCode": "WAW",
+                        "departureDateTime": "2023-05-27T08:30:00.000Z",
+                        "arrivalAirportCode": "DUB",
+                        "arrivalDateTime": "2023-05-27T09:50:00.000Z",
+                        "numberRace": "NH4847",
+                        "seatNumbers": [
+                            "40f",
+                            "41f",
+                            "42f",
+                            "43f",
+                            "44f"
+                        ],
+                        "freeSeats": 8,
+                        "flightTime": 140
+                    }
+                ]
+            },
+            {
+                "ticketsCost": {
+                    "adult": {
+                        "totalCost": "153.34",
+                        "fare": "99.67",
+                        "tax": "53.67"
+                    },
+                    "children": {
+                        "totalCost": "119.61",
+                        "fare": "65.78",
+                        "tax": "53.82"
+                    },
+                    "infant": {
+                        "totalCost": "49.07",
+                        "fare": "43.18",
+                        "tax": "5.89"
+                    }
+                },
+                "departureDate": "2023-05-31T00:00:00.000Z",
+                "departureAirportCode": "DUB",
+                "arrivalAirportCode": "WAW",
+                "flights": [
+                    {
+                        "departureAirportCode": "DUB",
+                        "departureDateTime": "2023-05-31T05:20:00.000Z",
+                        "arrivalAirportCode": "WAW",
+                        "arrivalDateTime": "2023-05-31T08:40:00.000Z",
+                        "numberRace": "AA8749",
+                        "seatNumbers": [
+                            "34c",
+                            "35c",
+                            "36c",
+                            "37c",
+                            "38c"
+                        ],
+                        "freeSeats": 7,
+                        "flightTime": 140
+                    }
+                ]
+            }
+        ]
+    },
+    ]
+    ```
+
+    or 
+    ```json
+        {"message": "Orders not found"}
+    ```
+
+* **Error Response:**
+  
+    if not verified
+       
+    {message: You are not authorized to perform this operation}
+
+    or 
+  
+    {"message": "Get orders error"}
   
 * **Notes:**
 
@@ -1193,7 +1444,7 @@ Edit order.
                 "code": "+34",
                 "phoneDigits": 10
             },
-            "phoneNumber": 34534690934,
+            "phoneNumber": "34534690934",
             "email": "email@email.com"
         },
         "departureAirportCode": "WAW",
@@ -1319,7 +1570,7 @@ Edit order.
                     "code": "+34",
                     "phoneDigits": 10
                 },
-                "phoneNumber": 34534690934,
+                "phoneNumber": "34534690934",
                 "email": "email@email.com"
             },
             "departureAirportCode": "IOP",
@@ -1440,6 +1691,80 @@ Edit order.
     or 
   
     {"message": "Order edit error"}
+  
+* **Notes:**
+
+    None
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  **Pay order**
+----
+Pay order.
+
+<details>
+
+* **URL**
+
+    /pay-order
+
+* **Method:**
+
+    `PUT`
+
+* **Headers:**
+
+'Content-Type': 'application/json'
+  
+'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0NDk5MzEzYjhlY2MyODQ5MTExMGU0OSIsImlhdCI6MTY4MjY2MTY1NCwiZXhwIjoxNjgyNzQ4MDU0fQ.-CdxY4BSsBx32BIcb7RiIjOXZGueamNbKj2rnBY10pc'
+
+*  **URL Params**
+
+    None
+
+* **Query Params**
+
+    id: userID
+    
+    example: ?id=dfsdfsjljflksd345n34jkwjhf
+
+* **Data Params**
+
+    ```json
+       {
+            "_id": "645cbf3829d412e59ef4787c",
+        }
+    ```
+
+* **Success Response:**
+
+  * **Code:** 200 OK <br />
+    **Content:** 
+    ```json
+        { "message": "Successfully" }
+    ```
+* **Error Response:**
+  
+    if not finded
+       
+    {"message": "Order not found"}
+
+    or 
+  
+    {"message": "Pay order error"}
   
 * **Notes:**
 

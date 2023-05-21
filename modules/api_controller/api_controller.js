@@ -5,6 +5,7 @@ const AirportModel = require('../../models/airport');
 const OrderModel = require('../../models/order');
 const RouteModel = require('../../models/route');
 const ProfileUserModel = require('../../models/profile_user');
+const CitizenshipModel = require('../../models/citizenship');
 
 const {
   getCoordFunction,
@@ -46,6 +47,22 @@ class ApiController {
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Get all country codes error` });
+    }
+  }
+
+  async getCitizenship(req, res) {
+    try {
+      let citizenshipList = [];
+      if ((await CitizenshipModel.count()) !== 0) {
+        citizenshipList = await CitizenshipModel.find()
+          .lean()
+          .select('citizenship');
+        citizenshipList = citizenshipList.map((data) => data.citizenship);
+      }
+      return res.status(200).json(citizenshipList);
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Get citizenship error` });
     }
   }
 
@@ -266,12 +283,40 @@ class ApiController {
       const id = decodeURIComponent(req.query.id);
       const orders = await OrderModel.find({
         userId: id,
-      }).select('-passengers._id -routes.flights._id -routes._id -userId -__v');
+        paid: { $ne: true },
+      }).select(
+        '-passengers._id -routes.flights._id -routes._id -userId -__v -paid'
+      );
+
+      if (orders.length === 0) {
+        return res.status(404).json({ message: 'Orders not found' });
+      }
 
       return res.status(200).json(orders);
     } catch (e) {
       console.log(e);
       res.status(400).json({ message: `Saved error` });
+    }
+  }
+
+  async getPaidOrders(req, res) {
+    try {
+      const id = decodeURIComponent(req.query.id);
+      const orders = await OrderModel.find({
+        userId: id,
+        paid: true,
+      }).select(
+        '-passengers._id -routes.flights._id -routes._id -userId -__v -paid'
+      );
+
+      if (orders.length === 0) {
+        return res.status(404).json({ message: 'Orders not found' });
+      }
+
+      return res.status(200).json(orders);
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Payment order error` });
     }
   }
 
@@ -298,10 +343,38 @@ class ApiController {
       const filter = { userId, _id: orderId };
       const result = await OrderModel.updateOne(filter, { $set: updatedOrder });
 
-      return res.status(200).json( updatedOrder );
+      if (result.n === 0) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      return res.status(200).json(updatedOrder);
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Get races error` });
+      res.status(400).json({ message: `Edit order error` });
+    }
+  }
+
+  async payOrder(req, res) {
+    try {
+      const userId = decodeURIComponent(req.query.id);
+      const orderId = req.body._id;
+      const filter = { userId, _id: orderId };
+      const update = { $set: { paid: true } };
+      const options = { new: true };
+      const updatedOrder = await OrderModel.findOneAndUpdate(
+        filter,
+        update,
+        options
+      );
+
+      if (!updatedOrder) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+
+      return res.status(200).json({ message: `Successfully` });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({ message: `Pay order error` });
     }
   }
 }
