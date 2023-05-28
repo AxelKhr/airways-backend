@@ -1,3 +1,6 @@
+const NodeCache = require('node-cache');
+const cache = new NodeCache();
+
 const Airport = require('../../models/airport');
 const {
   getCoordFunction,
@@ -19,6 +22,12 @@ module.exports.getConnectingAirportFunction = async function ({
   arrivalAirportCoords,
   distance,
 }) {
+  const cacheKey = `getConnectingAirportFunction:${departureAirportCode}:${arrivalAirportCode}`;
+  const cachedResult = cache.get(cacheKey);
+  if (cachedResult !== undefined) {
+    return cachedResult;
+  }
+
   const airports = await Airport.find();
   let connectingAirport = null;
 
@@ -45,7 +54,7 @@ module.exports.getConnectingAirportFunction = async function ({
     );
 
     if (
-      departureDistance / distance >= 0.30 &&
+      departureDistance / distance >= 0.3 &&
       departureDistance / distance < 0.7 &&
       arrivalDistance / distance <= 0.9
     ) {
@@ -54,7 +63,7 @@ module.exports.getConnectingAirportFunction = async function ({
         airport.city,
         airport.timezone
       );
-      const connectingAirport = {
+      connectingAirport = {
         code: airport.code,
         name: airport.name,
         city: airport.city,
@@ -63,8 +72,11 @@ module.exports.getConnectingAirportFunction = async function ({
         flightDepartureTime: getFlightTimeFunction(departureDistance),
         flightArrivalTime: getFlightTimeFunction(arrivalDistance),
       };
-      return connectingAirport;
+      break;
     }
   }
+
+  cache.set(cacheKey, connectingAirport);
+
   return connectingAirport;
 };

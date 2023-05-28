@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const NodeCache = require('node-cache');
+const cache = new NodeCache();
 
 const CountryCodeModel = require('../../models/country_code');
 const AirportModel = require('../../models/airport');
@@ -26,10 +28,18 @@ const {
 const {
   getConnectingAirportFunction,
 } = require('../get_connecting_airport_function/get_connecting_airport_function');
+const {
+  getAirportByCode,
+} = require('../get_aeroport_by_code/get_aeroport_by_code');
 
 class ApiController {
   async getCountryCodes(req, res) {
     try {
+      const cachedData = cache.get('countryCodes');
+      if (cachedData !== undefined) {
+        return res.status(200).json(cachedData);
+      }
+
       let countryCodes = [];
       if ((await CountryCodeModel.count()) !== 0) {
         countryCodes = await CountryCodeModel.find()
@@ -43,6 +53,8 @@ class ApiController {
           };
         });
       }
+      cache.set('countryCodes', countryCodes);
+
       return res.status(200).json(countryCodes);
     } catch (e) {
       console.log(e);
@@ -52,47 +64,59 @@ class ApiController {
 
   async getCitizenship(req, res) {
     try {
-      let citizenshipList = [];
-      if ((await CitizenshipModel.count()) !== 0) {
-        citizenshipList = await CitizenshipModel.find()
-          .lean()
-          .select('citizenship');
-        citizenshipList = citizenshipList.map((data) => data.citizenship);
+      let citizenshipList = cache.get('citizenshipList');
+      if (!citizenshipList) {
+        if ((await CitizenshipModel.count()) !== 0) {
+          citizenshipList = await CitizenshipModel.find()
+            .lean()
+            .select('citizenship');
+          citizenshipList = citizenshipList.map((data) => data.citizenship);
+          cache.set('citizenshipList', citizenshipList);
+        }
       }
       return res.status(200).json(citizenshipList);
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Get citizenship error` });
+      res.status(400).json({ message: 'Get citizenship error' });
     }
   }
 
   async getAirports(req, res) {
     try {
-      let airports = [];
-      if ((await AirportModel.count()) !== 0) {
-        airports = await AirportModel.find()
-          .lean()
-          .select('code name city country timezone');
-        airports.sort((a, b) => (a.code > b.code ? 1 : -1));
-        airports = airports.map((data) => {
-          return {
-            code: data.code,
-            name: data.name,
-            city: data.city,
-            country: data.country,
-            timezone: data.timezone,
-          };
-        });
+      let airports = cache.get('airports');
+      if (!airports) {
+        if ((await AirportModel.count()) !== 0) {
+          airports = await AirportModel.find()
+            .lean()
+            .select('code name city country timezone');
+          airports.sort((a, b) => (a.code > b.code ? 1 : -1));
+          airports = airports.map((data) => {
+            return {
+              code: data.code,
+              name: data.name,
+              city: data.city,
+              country: data.country,
+              timezone: data.timezone,
+            };
+          });
+          cache.set('airports', airports);
+        }
       }
       return res.status(200).json(airports);
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Get all airports error` });
+      res.status(400).json({ message: 'Get all airports error' });
     }
   }
 
   async getRace(req, res) {
     try {
+      const cacheKey = JSON.stringify(req.query);
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
       const departureAirportCode = decodeURIComponent(
         req.query.departureAirportCode
       );
@@ -113,16 +137,13 @@ class ApiController {
         : 5;
       const tickets = countAdult + countChildren;
 
-      const arrivalAirport = await AirportModel.findOne({
-        code: arrivalAirportCode,
-      });
+      const arrivalAirport = await getAirportByCode(arrivalAirportCode);
+
       const arrivalAirportName = arrivalAirport.name;
       const arrivalAirportCity = arrivalAirport.city;
       const arrivalAirportCountry = arrivalAirport.country;
 
-      const departureAirport = await AirportModel.findOne({
-        code: departureAirportCode,
-      });
+      const departureAirport = await getAirportByCode(departureAirportCode);
 
       const departureAirportName = departureAirport.name;
       const departureAirportCity = departureAirport.city;
@@ -232,6 +253,8 @@ class ApiController {
           data.routes[i].ticketsCost = foundRoute.ticketsCost;
         }
       }
+
+      cache.set(cacheKey, data);
 
       return res.status(200).json(data);
     } catch (e) {
