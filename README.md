@@ -1745,7 +1745,7 @@ Pay order.
 
     ```json
        {
-            "_id": "645cbf3829d412e59ef4787c",
+            "ids": ["645cbf3829d412e59ef4787c",     "645cbf3829d412e59ef4787c"]
         }
     ```
 

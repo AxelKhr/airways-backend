@@ -400,26 +400,25 @@ class ApiController {
   async payOrder(req, res) {
     try {
       const userId = decodeURIComponent(req.query.id);
-      const orderId = req.body._id;
-      const filter = { userId, _id: orderId };
+      const orderIds = req.body.ids;
+  
+      const filter = { userId, _id: { $in: orderIds } };
       const update = { $set: { paid: true } };
       const options = { new: true };
-      const updatedOrder = await OrderModel.findOneAndUpdate(
-        filter,
-        update,
-        options
-      );
-
-      if (!updatedOrder) {
-        return res.status(404).json({ message: 'Order not found' });
+  
+      const updatedOrders = await OrderModel.updateMany(filter, update, options);
+  
+      if (updatedOrders.nModified === 0) {
+        return res.status(404).json({ message: 'Orders not found' });
       }
-
-      return res.status(200).json({ message: `Successfully` });
+  
+      return res.status(200).json({ message: 'Successfully' });
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Pay order error` });
+      res.status(400).json({ message: 'Pay order error' });
     }
   }
+  
 }
 
 module.exports = new ApiController();
