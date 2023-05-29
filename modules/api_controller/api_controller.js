@@ -287,17 +287,39 @@ class ApiController {
       }).select(
         '-passengers._id -routes.flights._id -routes._id -userId -__v -paid'
       );
-
+  
       if (orders.length === 0) {
-        return res.status(404).json({ message: 'Orders not found' });
+        return res.status(200).json([]);
       }
-
+  
       return res.status(200).json(orders);
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Saved error` });
+      res.status(400).json({ message: 'Saved error' });
     }
   }
+
+  
+  // async getSavedOrders(req, res) {
+  //   try {
+  //     const id = decodeURIComponent(req.query.id);
+  //     const orders = await OrderModel.find({
+  //       userId: id,
+  //       paid: { $ne: true },
+  //     }).select(
+  //       '-passengers._id -routes.flights._id -routes._id -userId -__v -paid'
+  //     );
+
+  //     if (orders.length === 0) {
+  //       return res.status(404).json({ message: 'Orders not found' });
+  //     }
+
+  //     return res.status(200).json(orders);
+  //   } catch (e) {
+  //     console.log(e);
+  //     res.status(400).json({ message: `Saved error` });
+  //   }
+  // }
 
   async getPaidOrders(req, res) {
     try {
@@ -308,17 +330,38 @@ class ApiController {
       }).select(
         '-passengers._id -routes.flights._id -routes._id -userId -__v -paid'
       );
-
+  
       if (orders.length === 0) {
-        return res.status(404).json({ message: 'Orders not found' });
+        return res.status(200).json([]);
       }
-
+  
       return res.status(200).json(orders);
     } catch (e) {
       console.log(e);
-      res.status(400).json({ message: `Payment order error` });
+      res.status(400).json({ message: 'Payment order error' });
     }
   }
+  
+  // async getPaidOrders(req, res) {
+  //   try {
+  //     const id = decodeURIComponent(req.query.id);
+  //     const orders = await OrderModel.find({
+  //       userId: id,
+  //       paid: true,
+  //     }).select(
+  //       '-passengers._id -routes.flights._id -routes._id -userId -__v -paid'
+  //     );
+
+  //     if (orders.length === 0) {
+  //       return res.status(404).json({ message: 'Orders not found' });
+  //     }
+
+  //     return res.status(200).json(orders);
+  //   } catch (e) {
+  //     console.log(e);
+  //     res.status(400).json({ message: `Payment order error` });
+  //   }
+  // }
 
   async deleteOrder(req, res) {
     const idOrder = decodeURIComponent(req.query.order);
