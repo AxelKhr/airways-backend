@@ -20,7 +20,10 @@ module.exports.getConnectingAirportFunction = async function ({
   arrivalAirportCoords,
   distance,
 }) {
-  const airports = await Airport.find();
+  let airports = await Airport.find();
+
+  airports = shuffleArray(airports);
+
   let connectingAirport = null;
 
   for (const airport of airports) {
@@ -83,3 +86,12 @@ module.exports.getConnectingAirportFunction = async function ({
   }
   return connectingAirport;
 };
+
+function shuffleArray(array) {
+  const shuffledArray = array.slice();
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+}
