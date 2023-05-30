@@ -16,14 +16,6 @@ const {
 const {
   getTotalSeatsFunction,
 } = require('../get_total_seats_function/get_total_seats_function');
-
-const getRandomOffset = () => {
-  const offset = Math.floor(Math.random() * 5) - 2;
-  const minutes = offset * 5;
-  return minutes * 60000;
-};
-
-
 module.exports.getRacesFunction = function (data, days) {
   const flights = [];
   let currentDate = new Date(data.departureDate);
@@ -44,19 +36,17 @@ module.exports.getRacesFunction = function (data, days) {
         Math.floor(Math.random() * 15) + 6,
         Math.round(Math.random() * 5) * 10
       );
-      
+
       const arrivalDateTime = departureDateTime
         ? new Date(departureDateTime.getTime())
         : null;
-      
       if (arrivalDateTime) {
         const flightDuration = data.flightTime * 60000;
-        const offset = getRandomOffset();
         arrivalDateTime.setTime(
           arrivalDateTime.getTime() +
             flightDuration +
-            (data.timeZoneArrivalAirport - data.timeZoneDepartureAirport) * 3600000 +
-            offset
+            (data.timeZoneArrivalAirport - data.timeZoneDepartureAirport) *
+              3600000
         );
       }
 
@@ -84,8 +74,7 @@ module.exports.getRacesFunction = function (data, days) {
                   freeSeats,
                   totalSeats: getTotalSeatsFunction(freeSeats, data.flightTime),
                 },
-                flightTime: Math.round((arrivalDateTime - departureDateTime) / 60000),
-
+                flightTime: data.flightTime,
               },
             ],
 
@@ -109,12 +98,11 @@ module.exports.getRacesFunction = function (data, days) {
       if (arrivalConectingAeroportDateTime) {
         const flightDuration =
           data.connectingAirport.flightDepartureTime * 60000;
-          const offset = getRandomOffset();
         arrivalConectingAeroportDateTime.setTime(
           arrivalConectingAeroportDateTime.getTime() +
             flightDuration +
             (data.connectingAirport.timezone - data.timeZoneDepartureAirport) *
-              3600000 + offset
+              3600000
         );
       }
       const minDepartureTime = new Date(
@@ -149,12 +137,11 @@ module.exports.getRacesFunction = function (data, days) {
         : null;
       if (arrivalDateTime) {
         const flightDuration = data.connectingAirport.flightArrivalTime * 60000;
-        const offset = getRandomOffset();
         arrivalDateTime.setTime(
           arrivalDateTime.getTime() +
             flightDuration +
             (data.timeZoneArrivalAirport - data.connectingAirport.timezone) *
-              3600000 + offset
+              3600000
         );
       }
       const flight = {
@@ -187,7 +174,7 @@ module.exports.getRacesFunction = function (data, days) {
                 data.connectingAirport.flightDepartureTime
               ),
             },
-            flightTime: Math.round((arrivalConectingAeroportDateTime - departureDateTime) / 60000),
+            flightTime: data.connectingAirport.flightDepartureTime,
           };
         } else {
           transitRace = {
@@ -204,7 +191,7 @@ module.exports.getRacesFunction = function (data, days) {
                 data.connectingAirport.flightArrivalTime
               ),
             },
-            flightTime: Math.round((arrivalDateTime - departureConectingAeroportDateTime) / 60000),
+            flightTime: data.connectingAirport.flightArrivalTime,
           };
         }
         if (!skipDay) {
@@ -216,4 +203,3 @@ module.exports.getRacesFunction = function (data, days) {
   }
   return flights;
 };
-
