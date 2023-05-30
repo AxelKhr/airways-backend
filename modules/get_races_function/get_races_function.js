@@ -203,3 +203,4 @@ module.exports.getRacesFunction = function (data, days) {
   }
   return flights;
 };
+
