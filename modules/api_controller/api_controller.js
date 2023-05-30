@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const cache = require('memory-cache');
 
 const CountryCodeModel = require('../../models/country_code');
 const AirportModel = require('../../models/airport');
@@ -6,6 +7,7 @@ const OrderModel = require('../../models/order');
 const RouteModel = require('../../models/route');
 const ProfileUserModel = require('../../models/profile_user');
 const CitizenshipModel = require('../../models/citizenship');
+
 
 const {
   getCoordFunction,
@@ -30,6 +32,12 @@ const {
 class ApiController {
   async getCountryCodes(req, res) {
     try {
+      const cacheKey = 'countryCodes';
+      const cachedResult = cache.get(cacheKey);
+
+      if (cachedResult) {
+        return res.status(200).json(cachedResult);
+      }
       let countryCodes = [];
       if ((await CountryCodeModel.count()) !== 0) {
         countryCodes = await CountryCodeModel.find()
@@ -43,6 +51,10 @@ class ApiController {
           };
         });
       }
+
+      const cacheTimeout = 7 * 24 * 60 * 60 * 1000;
+      cache.put(cacheKey, countryCodes, cacheTimeout);
+
       return res.status(200).json(countryCodes);
     } catch (e) {
       console.log(e);
@@ -52,6 +64,13 @@ class ApiController {
 
   async getCitizenship(req, res) {
     try {
+      const cacheKey = 'citizenshipList';
+      const cachedResult = cache.get(cacheKey);
+
+      if (cachedResult) {
+        return res.status(200).json(cachedResult);
+      }
+
       let citizenshipList = [];
       if ((await CitizenshipModel.count()) !== 0) {
         citizenshipList = await CitizenshipModel.find()
@@ -59,6 +78,10 @@ class ApiController {
           .select('citizenship');
         citizenshipList = citizenshipList.map((data) => data.citizenship);
       }
+
+      const cacheTimeout = 7 * 24 * 60 * 60 * 1000;
+      cache.put(cacheKey, citizenshipList, cacheTimeout);
+
       return res.status(200).json(citizenshipList);
     } catch (e) {
       console.log(e);
@@ -68,6 +91,13 @@ class ApiController {
 
   async getAirports(req, res) {
     try {
+      const cacheKey = 'airports';
+      const cachedResult = cache.get(cacheKey);
+
+      if (cachedResult) {
+        return res.status(200).json(cachedResult);
+      }
+
       let airports = [];
       if ((await AirportModel.count()) !== 0) {
         airports = await AirportModel.find()
@@ -84,6 +114,10 @@ class ApiController {
           };
         });
       }
+
+      const cacheTimeout = 7 * 24 * 60 * 60 * 1000;
+      cache.put(cacheKey, airports, cacheTimeout);
+
       return res.status(200).json(airports);
     } catch (e) {
       console.log(e);
@@ -91,72 +125,46 @@ class ApiController {
     }
   }
 
+
   async getRace(req, res) {
     try {
-      const departureAirportCode = decodeURIComponent(
-        req.query.departureAirportCode
-      );
-      const arrivalAirportCode = decodeURIComponent(
-        req.query.arrivalAirportCode
-      );
+      const departureAirportCode = decodeURIComponent(req.query.departureAirportCode);
+      const arrivalAirportCode = decodeURIComponent(req.query.arrivalAirportCode);
       const departureDate = decodeURIComponent(req.query.departureDate);
-      const returnDate = req.query.returnDate
-        ? decodeURIComponent(req.query.returnDate)
-        : null;
-      const roundTrip = req.query.roundTrip === '1' ? true : false;
-
+      const returnDate = req.query.returnDate ? decodeURIComponent(req.query.returnDate) : null;
+      const roundTrip = req.query.roundTrip === '1';
+  
       const countAdult = Number(decodeURIComponent(req.query.countAdult));
       const countChildren = Number(decodeURIComponent(req.query.countChildren));
       const countInfant = Number(decodeURIComponent(req.query.countInfant));
-      const amountFlights = req.query.amountFlights
-        ? Number(decodeURIComponent(req.query.amountFlights))
-        : 5;
+      const amountFlights = req.query.amountFlights ? Number(decodeURIComponent(req.query.amountFlights)) : 5;
       const tickets = countAdult + countChildren;
-
-      const arrivalAirport = await AirportModel.findOne({
-        code: arrivalAirportCode,
-      });
+  
+      const [arrivalAirport, departureAirport] = await Promise.all([
+        AirportModel.findOne({ code: arrivalAirportCode }),
+        AirportModel.findOne({ code: departureAirportCode })
+      ]);
+  
       const arrivalAirportName = arrivalAirport.name;
       const arrivalAirportCity = arrivalAirport.city;
       const arrivalAirportCountry = arrivalAirport.country;
-
-      const departureAirport = await AirportModel.findOne({
-        code: departureAirportCode,
-      });
-
+  
       const departureAirportName = departureAirport.name;
       const departureAirportCity = departureAirport.city;
       const departureAirportCountry = departureAirport.country;
-
-      const departureAirportCoords = await getCoordFunction(
-        departureAirportCode,
-        departureAirportCity,
-        departureAirport.coordinates
-      );
-
-      const arrivalAirportCoords = await getCoordFunction(
-        arrivalAirportCode,
-        arrivalAirportCity,
-        arrivalAirport.coordinates
-      );
-
-      const distance = getDistanceFunction(
-        departureAirportCoords,
-        arrivalAirportCoords
-      );
-
-      const timeZoneArrivalAirport = await getTimezoneFunction(
-        arrivalAirportCode,
-        arrivalAirportCity,
-        arrivalAirport.timezone
-      );
-
-      const timeZoneDepartureAirport = await getTimezoneFunction(
-        departureAirportCode,
-        departureAirportCity,
-        departureAirport.timezone
-      );
-
+  
+      const [departureAirportCoords, arrivalAirportCoords] = await Promise.all([
+        getCoordFunction(departureAirportCode, departureAirportCity, departureAirport.coordinates),
+        getCoordFunction(arrivalAirportCode, arrivalAirportCity, arrivalAirport.coordinates)
+      ]);
+  
+      const distance = getDistanceFunction(departureAirportCoords, arrivalAirportCoords);
+  
+      const [timeZoneArrivalAirport, timeZoneDepartureAirport] = await Promise.all([
+        getTimezoneFunction(arrivalAirportCode, arrivalAirportCity, arrivalAirport.timezone),
+        getTimezoneFunction(departureAirportCode, departureAirportCity, departureAirport.timezone)
+      ]);
+  
       let connectingAirport = null;
       const flightTime = getFlightTimeFunction(distance);
       let cost = getCostFunction(distance);
@@ -169,11 +177,11 @@ class ApiController {
           distance,
         });
       }
-
-      if (connectingAirport !== null) {
+  
+      if (connectingAirport) {
         cost = cost + cost * 0.2;
       }
-
+  
       const data = {
         departureAirportCode,
         arrivalAirportCode,
@@ -195,50 +203,49 @@ class ApiController {
           amountFlights
         ),
       };
-
+  
       if (roundTrip) {
-        data.routes = data.routes.concat(
-          getRacesFunction(
-            {
-              departureDate: new Date(returnDate),
-              tickets,
-              flightTime,
-              timeZoneDepartureAirport: timeZoneArrivalAirport,
-              timeZoneArrivalAirport: timeZoneDepartureAirport,
-              cost,
-              connectingAirport,
-              departureAirportCode: arrivalAirportCode,
-              arrivalAirportCode: departureAirportCode,
-            },
-            amountFlights
-          )
+        const returnRoutes = getRacesFunction(
+          {
+            departureDate: new Date(returnDate),
+            tickets,
+            flightTime,
+            timeZoneDepartureAirport: timeZoneArrivalAirport,
+            timeZoneArrivalAirport: timeZoneDepartureAirport,
+            cost,
+            connectingAirport,
+            departureAirportCode: arrivalAirportCode,
+            arrivalAirportCode: departureAirportCode,
+          },
+          amountFlights
         );
+        data.routes = data.routes.concat(returnRoutes);
       }
-
+  
       const routes = data.routes;
-
+  
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i];
-        const { departureDate, departureAirportCode, arrivalAirportCode } =
-          route;
+        const { departureDate, departureAirportCode, arrivalAirportCode } = route;
         const foundRoute = await RouteModel.findOne({
           departureDate,
           departureAirportCode,
           arrivalAirportCode,
         }).select('-flights._id');
-
+  
         if (foundRoute) {
           data.routes[i].flights = foundRoute.flights;
           data.routes[i].ticketsCost = foundRoute.ticketsCost;
         }
       }
-
+  
       return res.status(200).json(data);
     } catch (e) {
-      console.log(e);
+      console.error(e.message);
       res.status(400).json({ message: `Get races error` });
     }
   }
+  
 
   async saveOrder(req, res) {
     try {

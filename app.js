@@ -5,6 +5,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const connectToDB = require('./database');
 const routes = require('./routes/routes');
+const compression = require('compression');
+
+app.use(compression());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
