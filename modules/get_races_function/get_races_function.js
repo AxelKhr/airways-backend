@@ -1,4 +1,6 @@
-const { getStartDateFunction } = require('../get_start_date_function/get_start_date_function');
+const {
+  getStartDateFunction,
+} = require('../get_start_date_function/get_start_date_function');
 const {
   getNumberRaceFunction,
 } = require('../get_number_race_function/get_number_race_function');
@@ -20,7 +22,8 @@ module.exports.getRacesFunction = function (data, days) {
   const startDate = getStartDateFunction(currentDate, days);
   days = days > 1 ? days * 2 + 1 : days;
   for (let i = 0; i < days; i++) {
-    const departureDateTime = days > 1 ? new Date(startDate.getTime()) : new Date(data.departureDate);
+    const departureDateTime =
+      days > 1 ? new Date(startDate.getTime()) : new Date(data.departureDate);
     let skipDay = false;
     if (Math.random() <= 0.08) {
       skipDay = true;
@@ -87,7 +90,6 @@ module.exports.getRacesFunction = function (data, days) {
         Math.floor(Math.random() * 15) + 6,
         Math.round(Math.random() * 5) * 10
       );
-
       const arrivalConectingAeroportDateTime = new Date(
         departureDateTime.getTime()
       )
@@ -103,7 +105,6 @@ module.exports.getRacesFunction = function (data, days) {
               3600000
         );
       }
-
       const minDepartureTime = new Date(
         arrivalConectingAeroportDateTime.getTime() + 3600000
       );
@@ -111,23 +112,22 @@ module.exports.getRacesFunction = function (data, days) {
         arrivalConectingAeroportDateTime.getTime() + 9000000
       );
       let departureConectingAeroportDateTime;
-      do {
-        const randomDepartureTime = new Date(
-          Math.floor(
-            Math.random() *
-              (maxDepartureTime.getTime() - minDepartureTime.getTime() + 1)
-          ) + minDepartureTime.getTime()
-        );
-        departureConectingAeroportDateTime = new Date(
-          arrivalConectingAeroportDateTime.getTime()
-        );
-        departureConectingAeroportDateTime.setHours(
-          randomDepartureTime.getHours(),
-          Math.round(randomDepartureTime.getMinutes() / 10) * 10
-        );
-      } while (
-        departureConectingAeroportDateTime.getTime() <=
+
+      const minMinutes = 10;
+      const maxMinutes = 90;
+      const intervalMinutes = 10;
+
+      departureConectingAeroportDateTime = new Date(
         arrivalConectingAeroportDateTime.getTime() + 3600000
+      );
+
+      const randomMinutes =
+        Math.floor(
+          Math.random() * ((maxMinutes - minMinutes) / intervalMinutes + 1)
+        ) * intervalMinutes;
+
+      departureConectingAeroportDateTime.setMinutes(
+        departureConectingAeroportDateTime.getMinutes() + randomMinutes
       );
 
       const arrivalDateTime = new Date(
@@ -144,7 +144,6 @@ module.exports.getRacesFunction = function (data, days) {
               3600000
         );
       }
-
       const flight = {
         departureDate:
           new Date(departureDateTime).toISOString().slice(0, 10) +
@@ -157,7 +156,6 @@ module.exports.getRacesFunction = function (data, days) {
           getCoefficientFunction(i)
         ),
       };
-
       for (let j = 0; j < 2; j++) {
         let transitRace;
         const freeSeats = Math.floor(Math.random() * 10) + data.tickets + i * 5;
@@ -203,6 +201,5 @@ module.exports.getRacesFunction = function (data, days) {
       flights.push(flight);
     }
   }
-
   return flights;
 };
